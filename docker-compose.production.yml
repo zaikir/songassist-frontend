@@ -5,7 +5,7 @@ services:
     environment:
       - VITE_PORT=80
       - VITE_API_URL=/api/v1
-      - VITE_API_DOMAIN=https://songassist.ai/api/v1
+      - VITE_API_DOMAIN=https://songassist.ai
     deploy:
       replicas: 1
       restart_policy:

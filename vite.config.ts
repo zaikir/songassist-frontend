@@ -48,7 +48,7 @@ export default ({ mode }) => {
       port: PORT,
       host: true,
       proxy: {
-        [process.env.VITE_API_URL]: {
+        [process.env.VITE_API_URL ?? '/api/v1']: {
           target: process.env.VITE_API_DOMAIN,
           changeOrigin: true,
           secure: false,

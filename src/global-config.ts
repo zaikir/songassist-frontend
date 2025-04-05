@@ -15,7 +15,7 @@ export type ConfigValue = {
 export const CONFIG: ConfigValue = {
   appName: 'Song Assist',
   appVersion: packageJson.version,
-  serverUrl: import.meta.env.VITE_API_URL ?? '',
+  serverUrl: import.meta.env.VITE_API_URL ?? '/api/v1',
   assetsDir: import.meta.env.VITE_ASSETS_DIR ?? '',
 
   /**

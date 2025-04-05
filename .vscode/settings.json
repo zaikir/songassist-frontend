@@ -1,0 +1,28 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": [
+    {
+      "directory": "../src",
+      "changeProcessCWD": true
+    }
+  ],
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.exclude": {
+    "src/routeTree.gen.ts": false,
+    "src/vite-env.d.ts": true,
+    "src/global.css": false,
+    "index.html": false,
+    "tsconfig.node.json": false,
+    "vite.config.ts": false,
+    ".editorconfig": false,
+    ".prettierignore": false
+  }
+}

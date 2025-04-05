@@ -35,4 +35,4 @@ build
 tsconfig.tsbuildinfo
 .ncurc.js
 
-src/routeTree.gen.ts
+# src/routeTree.gen.ts

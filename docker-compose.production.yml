@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   songassist-frontend:
-    image: $NAME:$VERSION
+    image: registry.audiologger.com/songassist-frontend:latest
     environment:
       - PORT=80
     deploy:

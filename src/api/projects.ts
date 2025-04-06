@@ -12,6 +12,11 @@ export default (axiosInstance: AxiosInstance) => {
     return result.data;
   }
 
+  async function updateProject(project: Project) {
+    const result = await axiosInstance.patch<Project>(`/projects/${project.id}`, project);
+    return result.data;
+  }
+
   async function searchSong(projectId: string, song: string) {
     const { data } = await axiosInstance.get(
       `/projects/${projectId}/search-song?query=${encodeURIComponent(song)}`
@@ -51,6 +56,7 @@ export default (axiosInstance: AxiosInstance) => {
   return {
     getProjects,
     createProject,
+    updateProject,
     searchSong,
     processPrompt,
   };

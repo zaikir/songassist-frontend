@@ -36,7 +36,7 @@ export function AccountDrawer({ sx, ...other }: AccountDrawerProps) {
   const data = [
     {
       href: '/',
-      label: 'Dashboard',
+      label: 'Assistent',
       icon: <Iconify icon="solar:home-angle-bold-duotone" />,
     },
     // {

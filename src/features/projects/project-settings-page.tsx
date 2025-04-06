@@ -1,4 +1,4 @@
-import { z as zod } from 'zod';
+import { useSetAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -7,26 +7,27 @@ import Stack from '@mui/material/Stack';
 import { Card, Container } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 
+import { api } from 'src/api';
+
 import { toast } from 'src/components/snackbar';
 import { Form } from 'src/components/hook-form';
 
+import { projectsAtom } from '../bootstrap';
 import { useSelectedProject } from './hooks/use-selected-project';
 import { NewProjectFormFields } from './components/new-project-form-fields';
-
-import type { NewProjectSchemaType } from './components/new-project-dialog';
+import { NewProjectSchema, type NewProjectSchemaType } from './components/new-project-dialog';
 
 // ----------------------------------------------------------------------
 
 export type UpdateProjectSchemaType = NewProjectSchemaType;
 
-export const UpdateUserSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
-});
+export const UpdateUserSchema = NewProjectSchema;
 
 // ----------------------------------------------------------------------
 
 export function ProjectSettingsPage() {
   const project = useSelectedProject()!;
+  const setProjects = useSetAtom(projectsAtom);
   const formData: UpdateProjectSchemaType = project;
   const defaultValues: UpdateProjectSchemaType = project;
   const methods = useForm<UpdateProjectSchemaType>({
@@ -43,16 +44,14 @@ export function ProjectSettingsPage() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      console.log(data);
-      // const updatedUser = await api.updateMe({
-      //   ...data,
-      //   avatarUrl:
-      //     data.avatarUrl instanceof File ? await imageToBase64(data.avatarUrl) : data.avatarUrl,
-      // });
+      const updatedItem = await api.updateProject({
+        ...data,
+        id: project.id,
+      });
 
-      // setUser({ ...user, ...updatedUser });
-      toast.success('Update saved!');
-      // methods.reset(updatedUser);
+      setProjects((prev) => prev.map((p) => (p.id === updatedItem.id ? updatedItem : p)));
+      toast.success('Project updated!');
+      //methods.reset(updatedUser);
     } catch (error) {
       console.error(error);
     }

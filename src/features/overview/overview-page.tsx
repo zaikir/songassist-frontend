@@ -96,10 +96,9 @@ export function OverviewPage() {
   }
 
   return (
-    <DashboardContent maxWidth={false} disableBorder>
-      <Portal container={headerContainerRef}>
-        <ProjectSelector />
-      </Portal>
+    <DashboardContent maxWidth={false}>
+      <LayoutHeader />
+
       <Container maxWidth="xl" sx={{ mt: 8 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
           {/* Heading */}
@@ -210,5 +209,20 @@ export function OverviewPage() {
         </Box>
       </Container>
     </DashboardContent>
+  );
+}
+
+function LayoutHeader() {
+  const { headerContainerRefAtom } = useDashboardLayout();
+  const headerContainerRef = useAtomValue(headerContainerRefAtom);
+
+  if (!headerContainerRef) {
+    return null;
+  }
+
+  return (
+    <Portal container={headerContainerRef}>
+      <ProjectSelector />
+    </Portal>
   );
 }

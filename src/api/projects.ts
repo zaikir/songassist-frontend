@@ -17,13 +17,31 @@ export default (axiosInstance: AxiosInstance) => {
     return result.data;
   }
 
-  async function searchSong(projectId: string, song: string) {
+  async function searchSongLegacy(projectId: string, song: string) {
     const { data } = await axiosInstance.get(
       `/projects/${projectId}/search-song?query=${encodeURIComponent(song)}`
     );
 
     return data as {
       song: string;
+    }[];
+  }
+
+  async function searchSong(projectId: string, song: string) {
+    const { data } = await axiosInstance.post(
+      `/projects/${projectId}/search-song?query=${encodeURIComponent(song)}`,
+      {
+        search: song,
+      }
+    );
+
+    return data.results as {
+      artistId: string;
+      artistName: string;
+      artworkUrl100: string;
+      previewUrl: string;
+      trackId: string;
+      trackName: string;
     }[];
   }
 

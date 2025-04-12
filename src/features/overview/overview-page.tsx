@@ -3,14 +3,13 @@ import Markdown from 'react-markdown';
 import debounce from 'lodash/debounce';
 import { useMemo, useState, useEffect } from 'react';
 
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box, Paper, Stack, Button, Portal, Container, Typography } from '@mui/material';
 
 import { api } from 'src/api';
 import { DashboardContent, useDashboardLayout } from 'src/shared/layouts/dashboard';
 
+import { SongSelectField } from './song-autocomplete';
 import { ProjectSelector, useSelectedProject } from '../projects';
 
 type SongSuggestion = {
@@ -39,7 +38,7 @@ export function OverviewPage() {
         setIsSearching(true);
         try {
           const results = await searchSong(value);
-          setOptions(results);
+          setOptions(results as any[]);
         } catch (error) {
           console.error('Error fetching song suggestions:', error);
           setOptions([]);
@@ -119,7 +118,15 @@ export function OverviewPage() {
             }}
           >
             <Stack spacing={1}>
-              <Autocomplete
+              <SongSelectField
+                // value={songTitle}
+                onChange={(x) => {
+                  setSongTitle(x as any);
+                }}
+                projectId={selectedProject!.id}
+                label=""
+              />
+              {/* <Autocomplete
                 freeSolo
                 options={options}
                 // loading={isSearching}
@@ -167,7 +174,7 @@ export function OverviewPage() {
                   />
                 )}
                 filterSelectedOptions
-              />
+              /> */}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                   variant="contained"

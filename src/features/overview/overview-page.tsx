@@ -4,7 +4,20 @@ import debounce from 'lodash/debounce';
 import { useMemo, useState, useEffect } from 'react';
 
 import CircularProgress from '@mui/material/CircularProgress';
-import { Box, Paper, Stack, Button, Portal, Container, Typography } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Stack,
+  Button,
+  Portal,
+  Select,
+  MenuItem,
+  Container,
+  TextField,
+  Typography,
+  InputLabel,
+  FormControl,
+} from '@mui/material';
 
 import { api } from 'src/api';
 import { DashboardContent, useDashboardLayout } from 'src/shared/layouts/dashboard';
@@ -28,6 +41,8 @@ export function OverviewPage() {
   const [options, setOptions] = useState<SongSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [model, setModel] = useState<string>('sonar-pro');
+  const [temperature, setTemperature] = useState(0.3);
 
   const searchSong = (query: string) => api.searchSong(selectedProject!.id, query);
 
@@ -75,11 +90,11 @@ export function OverviewPage() {
     try {
       setIsLoading(true);
 
-      console.log({
-        songTitle,
+      const { result } = await api.processPrompt(selectedProject!.id, {
+        song: songTitle,
+        temperature,
+        model,
       });
-
-      const { result } = await api.processPrompt(selectedProject!.id, songTitle);
       if (result) {
         setResultMarkdown(result);
       }
@@ -117,7 +132,32 @@ export function OverviewPage() {
               p: 1,
             }}
           >
-            <Stack spacing={1}>
+            <Stack spacing={3}>
+              <TextField
+                variant="outlined"
+                placeholder="Temperature"
+                type="number"
+                label="Temperature"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+              />
+              <FormControl fullWidth>
+                <InputLabel id="simple-select-label">AI Model</InputLabel>
+                <Select
+                  labelId="simple-select-label"
+                  value={model}
+                  label="AI Model"
+                  onChange={(x) => setModel(x.target.value)}
+                >
+                  <MenuItem value="sonar">sonar</MenuItem>
+                  <MenuItem value="sonar-pro">sonar-pro</MenuItem>
+                  <MenuItem value="gpt-4o-mini-search-preview">gpt-4o-mini-search-preview</MenuItem>
+                  <MenuItem value="gpt-4o-search-preview">
+                    gpt-4o-search-preview (expensive)
+                  </MenuItem>
+                </Select>
+              </FormControl>
+
               <SongSelectField
                 // value={songTitle}
                 onChange={(x) => {
@@ -188,7 +228,10 @@ export function OverviewPage() {
           </Box>
 
           {!isLoading && resultMarkdown && (
-            <Paper elevation={0} sx={{ mt: 4, p: 2, width: '100%' }}>
+            <Paper
+              elevation={0}
+              sx={{ mt: 4, p: 2, width: '100%', ul: { listStyleType: 'unset', 'li p': { my: 1 } } }}
+            >
               <Markdown>{resultMarkdown}</Markdown>
               {/* <Typography variant="h6" sx={{ mt: 2 }}>
                 Rate the response:

@@ -45,11 +45,11 @@ export default (axiosInstance: AxiosInstance) => {
     }[];
   }
 
-  async function processPrompt(projectId: string, song: string) {
+  async function processPrompt(projectId: string, payload: any) {
     // First request to get the generation ID.
     const { data: initialData } = await axiosInstance.post<{ generationId: string }>(
       `/projects/${projectId}/prompt`,
-      { song }
+      payload
     );
     const generationId = initialData.generationId;
 

@@ -127,6 +127,7 @@ export function SongSelectField({
           fullWidth
           required={required}
           {...props}
+          placeholder="Search for a song"
           sx={{
             '& .MuiOutlinedInput-root': {
               '& fieldset': {

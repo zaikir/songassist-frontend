@@ -1,5 +1,5 @@
 import type { AxiosInstance } from 'axios';
-import type { User } from 'src/features/auth';
+import type { User } from 'src/types/entities';
 
 export default (axiosInstance: AxiosInstance) => {
   async function updateMe(data: Partial<User>) {

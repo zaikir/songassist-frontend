@@ -10,7 +10,6 @@ import {
   Dialog,
   Button,
   Backdrop,
-  Typography,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -19,12 +18,11 @@ import {
 import { useMountEffect } from 'src/hooks/use-mount-effect';
 
 import { api } from 'src/api';
-import { CONFIG } from 'src/global-config';
-import { projectsAtom } from 'src/features/bootstrap';
+import { useUser } from 'src/features/auth';
+import { userAtom } from 'src/features/bootstrap';
 import { getDefaultLanguage } from 'src/shared/utils/get-default-language';
 import { getUserLocationInfo } from 'src/shared/utils/get-user-location-info';
 
-import { toast } from 'src/components/snackbar';
 import { Form } from 'src/components/hook-form';
 import { LoadingButton } from 'src/components/loading-button';
 
@@ -46,11 +44,12 @@ interface ProjectCreationDialogProps {
 }
 
 export function NewProjectDialog({ initial, open, onClose }: ProjectCreationDialogProps) {
-  const setProjects = useSetAtom(projectsAtom);
+  const user = useUser();
+  const setUser = useSetAtom(userAtom);
   const navigate = useNavigate();
 
   const defaultValues: NewProjectSchemaType = {
-    name: '',
+    name: user.name,
     language: getDefaultLanguage(),
     country: '',
     city: '',
@@ -80,16 +79,12 @@ export function NewProjectDialog({ initial, open, onClose }: ProjectCreationDial
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const newProject = await api.createProject({
+      await api.updateMe({
         ...data,
-        // avatarUrl:
-        //   data.avatarUrl instanceof File ? await imageToBase64(data.avatarUrl) : data.avatarUrl!,
       });
 
-      setProjects((prev) => [newProject, ...prev]);
-      toast.success('Project created successfully!');
-
-      navigate({ to: '/projects/' + newProject.id });
+      setUser((prev) => ({ ...prev!, ...data }));
+      navigate({ to: '/' });
 
       onClose();
     } catch (error) {
@@ -124,9 +119,7 @@ export function NewProjectDialog({ initial, open, onClose }: ProjectCreationDial
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle>
-        {initial ? `Welcome to the ${CONFIG.appName}!` : 'Create New Project'}
-      </DialogTitle>
+      <DialogTitle>Welcome to Songassist</DialogTitle>
       <DialogContent>
         <Form methods={methods} onSubmit={onSubmit}>
           <Box
@@ -134,22 +127,20 @@ export function NewProjectDialog({ initial, open, onClose }: ProjectCreationDial
               rowGap: 3,
               columnGap: 2,
               display: 'grid',
+              pt: 1,
               gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(1, 1fr)' },
             }}
           >
-            <Typography sx={{ mb: 0 }} variant="body2">
-              Please tell us about your project.
-            </Typography>
             <NewProjectFormFields />
           </Box>
         </Form>
       </DialogContent>
       <DialogActions>
         <LoadingButton onClick={onCancel} variant="outlined" color="inherit">
-          {initial ? 'Sign out' : 'Cancel'}
+          Sign out
         </LoadingButton>
         <Button onClick={onSubmit} variant="contained" disabled={isSubmitting}>
-          Create
+          Continue
         </Button>
       </DialogActions>
     </Dialog>

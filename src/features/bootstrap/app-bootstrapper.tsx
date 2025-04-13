@@ -9,7 +9,7 @@ import { getUserLocationInfo } from 'src/shared/utils/get-user-location-info';
 
 import { useUser } from '../auth';
 import { NewProjectDialog } from '../projects';
-import { userAtom, projectsAtom, isAppInitializedAtom } from './atoms';
+import { userAtom, isAppInitializedAtom } from './atoms';
 
 type Props = {
   children: React.ReactNode;
@@ -28,7 +28,7 @@ export function AppBootstrapper({ children }: Props) {
       }
 
       store.set(userAtom, result.user);
-      store.set(projectsAtom, result.projects);
+      // store.set(projectsAtom, result.projects);
     } catch {
       // no-op
     } finally {
@@ -51,13 +51,10 @@ export function AppBootstrapper({ children }: Props) {
 function NewProjectDialogWrapper() {
   const user = useUser();
   const isInitialized = useAtomValue(isAppInitializedAtom);
-  const projects = useAtomValue(projectsAtom);
 
   return (
     <AnimatePresence>
-      {isInitialized && user && !projects.length && (
-        <NewProjectDialog open onClose={() => {}} initial />
-      )}
+      {isInitialized && user && !user.language && <NewProjectDialog open onClose={() => {}} />}
     </AnimatePresence>
   );
 }

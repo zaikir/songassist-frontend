@@ -1,3 +1,5 @@
+import type { User } from 'src/types/entities';
+
 import { z as zod } from 'zod';
 import { useAtom } from 'jotai';
 import { useForm } from 'react-hook-form';
@@ -16,8 +18,6 @@ import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import { userAtom } from '../bootstrap';
-
-import type { User } from '../auth';
 
 // ----------------------------------------------------------------------
 

@@ -10,7 +10,7 @@ export function NewProjectFormFields() {
       <Field.Text
         name="name"
         label="Name"
-        placeholder="e.g. Your station name"
+        placeholder="Enter your name"
         slotProps={{ inputLabel: { shrink: true } }}
       />
       <Field.Autocomplete

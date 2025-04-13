@@ -25,4 +25,5 @@ export type Chat = {
   comment: string | null;
   userId: string;
   createdAt: string;
+  systemInfo: string | null;
 };

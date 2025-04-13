@@ -3,7 +3,16 @@ import ReactMarkdown from 'react-markdown';
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-import { Box, Paper, Button, Container, Typography } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Button,
+  Container,
+  Accordion,
+  Typography,
+  AccordionSummary,
+  AccordionDetails,
+} from '@mui/material';
 
 import { api } from 'src/api';
 
@@ -20,6 +29,13 @@ export function ChatPage({ id }: Props) {
   const chats = useAtomValue(chatsAtom);
   const chat = chats.find((x) => x.id === id);
   const [markdown, setMarkdown] = useState<string | null>(null);
+  const [systemInfo, setSystemInfo] = useState<{
+    searchUserPrompt: string;
+    searchResponse: string;
+    postSystemPrompt: string;
+    postUserPrompt: string;
+    response: string;
+  } | null>(null);
   const navigate = useNavigate();
   const waitingTextRef = useRef(loadingTexts[Math.floor(Math.random() * loadingTexts.length)]);
 
@@ -27,6 +43,7 @@ export function ChatPage({ id }: Props) {
     (async () => {
       const response = await api.waitForChatResponse(id);
       setMarkdown(response?.response ?? 'Generation error');
+      setSystemInfo(response.systemInfo ? JSON.parse(response.systemInfo) : null);
     })();
   }, [id]);
 
@@ -62,11 +79,13 @@ export function ChatPage({ id }: Props) {
               startIcon={<Iconify icon="eva:refresh-fill" />}
               onClick={async () => {
                 setMarkdown(null);
+                setSystemInfo(null);
 
                 await api.regeneratePrompt(id);
 
                 const response = await api.waitForChatResponse(id);
                 setMarkdown(response?.response ?? 'Generation error');
+                setSystemInfo(response.systemInfo ? JSON.parse(response.systemInfo) : null);
               }}
             >
               Regenerate
@@ -96,14 +115,7 @@ export function ChatPage({ id }: Props) {
             {/* Markdown Bullet List Response */}
             <Box
               sx={{
-                // backgroundColor: '#FAFAFA',
-                // p: 3,
-                // borderRadius: 1,
                 mb: 3,
-                // boxShadow: 1,
-                a: {
-                  // display: 'none',
-                },
                 ul: {
                   pt: 2,
                   pl: 2,
@@ -116,12 +128,87 @@ export function ChatPage({ id }: Props) {
             >
               <ReactMarkdown>{markdown}</ReactMarkdown>
             </Box>
-            {/* Rate Response Button */}
-            {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Button variant="contained" color="secondary">
-                Rate Response
-              </Button>
-            </Box> */}
+
+            <Box>
+              {systemInfo?.searchUserPrompt && (
+                <Accordion>
+                  <AccordionSummary>
+                    <Typography component="span">User Prompt for Search</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
+                    {systemInfo.searchUserPrompt}
+                  </AccordionDetails>
+                </Accordion>
+              )}
+              {systemInfo?.searchResponse && (
+                <Accordion>
+                  <AccordionSummary>
+                    <Typography component="span">Search Result</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        mb: 3,
+                        ul: {
+                          pt: 2,
+                          pl: 2,
+                          listStyleType: 'disc',
+                          li: {
+                            mb: 2,
+                          },
+                        },
+                      }}
+                    >
+                      <ReactMarkdown>{systemInfo?.searchResponse}</ReactMarkdown>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+              {systemInfo?.postSystemPrompt && (
+                <Accordion>
+                  <AccordionSummary>
+                    <Typography component="span">Post-processing System Prompt</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
+                    {systemInfo.postSystemPrompt}
+                  </AccordionDetails>
+                </Accordion>
+              )}
+              {systemInfo?.postUserPrompt && (
+                <Accordion>
+                  <AccordionSummary>
+                    <Typography component="span">Post-processing User Prompt</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
+                    {systemInfo.postUserPrompt}
+                  </AccordionDetails>
+                </Accordion>
+              )}
+              {systemInfo?.response && (
+                <Accordion>
+                  <AccordionSummary>
+                    <Typography component="span">Final Result</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        mb: 3,
+                        ul: {
+                          pt: 2,
+                          pl: 2,
+                          listStyleType: 'disc',
+                          li: {
+                            mb: 2,
+                          },
+                        },
+                      }}
+                    >
+                      <ReactMarkdown>{systemInfo?.response}</ReactMarkdown>
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+              )}
+            </Box>
           </>
         )}
       </Paper>

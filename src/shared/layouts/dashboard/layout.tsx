@@ -1,16 +1,17 @@
+import type { Chat } from 'src/types/entities';
 import type { Breakpoint } from '@mui/material/styles';
 import type { NavListProps, NavSectionProps } from 'src/components/nav-section';
 
 import { merge } from 'es-toolkit';
-import { getDefaultStore } from 'jotai';
 import { useBoolean } from 'minimal-shared/hooks';
+import { useAtomValue, getDefaultStore } from 'jotai';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { iconButtonClasses } from '@mui/material/IconButton';
 
-import { useSelectedProject } from 'src/features/projects';
+import { chatsAtom } from 'src/features/bootstrap';
 
 import { Logo } from 'src/components/logo';
 import { Iconify } from 'src/components/iconify';
@@ -20,6 +21,7 @@ import { NavMobile } from './nav-mobile';
 import { VerticalDivider } from './content';
 import { NavVertical } from './nav-vertical';
 import { layoutClasses } from '../core/classes';
+import { ICONS } from '../nav-config-dashboard';
 import { NavHorizontal } from './nav-horizontal';
 import { MainSection } from '../core/main-section';
 import { MenuButton } from '../components/menu-button';
@@ -27,7 +29,6 @@ import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
 import { useDashboardLayout } from './use-dashboard-layout';
 import { AccountDrawer } from '../components/account-drawer';
-import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
 
 import type { MainSectionProps } from '../core/main-section';
@@ -57,15 +58,45 @@ export function DashboardLayout({
   layoutQuery = 'lg',
 }: DashboardLayoutProps) {
   const theme = useTheme();
-  const project = useSelectedProject();
   const settings = useSettingsContext();
+  const chats = useAtomValue(chatsAtom);
+  console.log({ chats });
   const { headerContainerRefAtom } = useDashboardLayout();
 
   const navVars = dashboardNavColorVars(theme, settings.state.navColor, settings.state.navLayout);
 
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
-  const navData = slotProps?.nav?.data ?? dashboardNavData(project ?? ({ id: '' } as any));
+  const navData = [
+    {
+      subheader: '',
+      items: [
+        {
+          title: 'Assistent',
+          path: `/`,
+          icon: ICONS.chat,
+        },
+      ],
+    },
+
+    ...(getNavData(chats) as any),
+    // {
+    //   subheader: 'Project Management',
+    //   items: [
+    //     {
+    //       title: 'Team',
+    //       path: `/projects/${project.id}/team`,
+    //       icon: <Iconify icon="mdi:domain" />,
+    //     },
+    //     {
+    //       title: 'Settings',
+    //       path: `/projects/${project.id}/settings`,
+    //       icon: <Iconify icon="tabler:settings" />,
+    //       exact: false,
+    //     },
+    //   ],
+    // },
+  ];
 
   const isNavMini = settings.state.navLayout === 'mini';
   const isNavHorizontal = settings.state.navLayout === 'horizontal';
@@ -252,4 +283,39 @@ export function DashboardLayout({
       {renderMain()}
     </LayoutSection>
   );
+}
+
+function getNavData(chats: any[]) {
+  const today = new Date();
+
+  function getDayLabel(dateString: string): string {
+    const chatDate = new Date(dateString);
+    const diffTime = today.getTime() - chatDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    return `${diffDays} days ago`;
+  }
+
+  const groups = new Map<string, Chat[]>();
+
+  chats.forEach((chat) => {
+    const label = getDayLabel(chat.createdAt);
+    if (!groups.has(label)) {
+      groups.set(label, []);
+    }
+    groups.get(label)!.push(chat);
+  });
+
+  console.log(groups);
+  const navData = Array.from(groups.entries()).map(([subheader, items]) => ({
+    subheader,
+    items: items.map((chat) => ({
+      title: chat.request,
+      path: `/chats/${chat.id}`,
+    })),
+  }));
+
+  return navData;
 }

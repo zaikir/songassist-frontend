@@ -15,3 +15,14 @@ export type User = {
   country: string | null;
   city: string | null;
 };
+
+export type Chat = {
+  id: string;
+  request: string;
+  response: string | null;
+  error: string | null;
+  rating: number | null;
+  comment: string | null;
+  userId: string;
+  createdAt: string;
+};

@@ -1,35 +1,10 @@
 import type { AxiosInstance } from 'axios';
-import type { Project } from 'src/types/entities';
+import type { Chat } from 'src/types/entities';
 
 export default (axiosInstance: AxiosInstance) => {
-  async function getProjects() {
-    const result = await axiosInstance.get<Project[]>('/projects');
-    return result.data;
-  }
-
-  async function createProject(project: Omit<Project, 'id' | 'ownerUserId'>) {
-    const result = await axiosInstance.post<Project>('/projects', project);
-    return result.data;
-  }
-
-  async function updateProject(project: Project) {
-    const result = await axiosInstance.patch<Project>(`/projects/${project.id}`, project);
-    return result.data;
-  }
-
-  async function searchSongLegacy(projectId: string, song: string) {
-    const { data } = await axiosInstance.get(
-      `/projects/${projectId}/search-song?query=${encodeURIComponent(song)}`
-    );
-
-    return data as {
-      song: string;
-    }[];
-  }
-
   async function searchSong(song: string) {
     const { data } = await axiosInstance.post(
-      `/projects/search-song?query=${encodeURIComponent(song)}`,
+      `/chats/search-song?query=${encodeURIComponent(song)}`,
       {
         search: song,
       }
@@ -45,37 +20,55 @@ export default (axiosInstance: AxiosInstance) => {
     }[];
   }
 
+  async function getChats() {
+    const { data } = await axiosInstance.get<Chat[]>(`/chats`);
+
+    return data;
+  }
+  async function getChatInfo(chat: any) {
+    const { data } = await axiosInstance.get<Chat>(`/chats/${chat.id}`);
+
+    return data;
+  }
+
   async function processPrompt(payload: any) {
-    // First request to get the generation ID.
     const { data: initialData } = await axiosInstance.post<{ generationId: string }>(
-      `/projects/prompt`,
+      `/chats/prompt`,
       payload
     );
     const generationId = initialData.generationId;
 
-    // Poll for the status until it's not null.
+    return { chatId: generationId };
+  }
+
+  async function regeneratePrompt(chatId: string) {
+    await axiosInstance.post(`/chats/${chatId}/regenerate`);
+
+    return;
+  }
+
+  async function waitForChatResponse(chatId: string) {
     let result = null;
     while (true) {
-      const { data } = await axiosInstance.get<{ result: string | null }>(
-        `/projects/prompt-status?id=${generationId}`
-      );
+      const { data } = await axiosInstance.get<Chat>(`/chats/prompt-status?id=${chatId}`);
 
-      if (data.result !== null) {
+      if (data.response !== null || data.error !== null) {
         result = data;
         break;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before polling again
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     return result;
   }
 
   return {
-    getProjects,
-    createProject,
-    updateProject,
+    getChats,
     searchSong,
+    getChatInfo,
     processPrompt,
+    regeneratePrompt,
+    waitForChatResponse,
   };
 };

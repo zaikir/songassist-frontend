@@ -1,15 +1,15 @@
 import type { AxiosInstance } from 'axios';
-import type { User } from 'src/types/entities';
+import type { Chat, User } from 'src/types/entities';
 
 export default (axiosInstance: AxiosInstance) => {
   async function getAuthData() {
     try {
-      const [{ data: user }] = await Promise.all([
+      const [{ data: user }, { data: chats }] = await Promise.all([
         axiosInstance.get<User | null>('/users/me'),
-        // axiosInstance.get<Project[]>('/projects'),
+        axiosInstance.get<Chat[]>('/chats'),
       ]);
 
-      return { user };
+      return { user, chats };
     } catch {
       return { user: null };
     }

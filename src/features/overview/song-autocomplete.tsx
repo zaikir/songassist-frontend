@@ -4,15 +4,7 @@ import type { TextFieldProps } from '@mui/material';
 import debounce from 'lodash.debounce';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import {
-  Box,
-  Grid,
-  Skeleton,
-  TextField,
-  Typography,
-  Autocomplete,
-  CircularProgress,
-} from '@mui/material';
+import { TextField, Autocomplete, CircularProgress } from '@mui/material';
 
 import { api } from 'src/api';
 
@@ -157,39 +149,7 @@ export function SongSelectField({
       // Render each option as a custom layout.
       renderOption={(optionProps, option) => (
         <li {...optionProps} key={option.trackId}>
-          <Grid container alignItems="center">
-            <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
-              <Skeleton sx={{ width: '64px', height: '64px', position: 'absolute' }} />
-              <Box
-                component="img"
-                alt="Preview"
-                src={option.artworkUrl100}
-                sx={{
-                  borderRadius: 2,
-                  width: '64px',
-                  height: '64px',
-                  objectFit: 'cover',
-                }}
-              />
-            </Grid>
-            <Grid
-              item
-              xs
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                pl: 2,
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" sx={{ m: 0, p: 0 }}>
-                <b>{option.artistName}</b>
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ m: 0, p: 0 }}>
-                {option.trackName}
-              </Typography>
-            </Grid>
-          </Grid>
+          {`${option.trackName} - ${option.artistName}`}
         </li>
       )}
       // Customize the way each option is compared to the input.

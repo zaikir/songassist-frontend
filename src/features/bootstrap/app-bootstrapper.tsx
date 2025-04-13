@@ -9,7 +9,7 @@ import { getUserLocationInfo } from 'src/shared/utils/get-user-location-info';
 
 import { useUser } from '../auth';
 import { NewProjectDialog } from '../projects';
-import { userAtom, isAppInitializedAtom } from './atoms';
+import { userAtom, chatsAtom, isAppInitializedAtom } from './atoms';
 
 type Props = {
   children: React.ReactNode;
@@ -28,6 +28,7 @@ export function AppBootstrapper({ children }: Props) {
       }
 
       store.set(userAtom, result.user);
+      store.set(chatsAtom, result.chats);
       // store.set(projectsAtom, result.projects);
     } catch {
       // no-op

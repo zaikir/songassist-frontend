@@ -19,32 +19,18 @@ import { Route as AuthSignInImport } from './routes/auth/sign-in'
 import { Route as AuthGoogleVerifyImport } from './routes/auth/google-verify'
 import { Route as AuthGithubVerifyImport } from './routes/auth/github-verify'
 import { Route as AuthEmailVerifyImport } from './routes/auth/email-verify'
-import { Route as LayoutProjectsIndexImport } from './routes/_layout/projects/index'
+import { Route as LayoutChatsIndexImport } from './routes/_layout/chats/index'
 import { Route as LayoutAccountLayoutImport } from './routes/_layout/account/_layout'
 import { Route as LayoutAccountLayoutIndexImport } from './routes/_layout/account/_layout/index'
-import { Route as LayoutProjectsProjectLayoutImport } from './routes/_layout/projects/$project/_layout'
+import { Route as LayoutChatsChatLayoutImport } from './routes/_layout/chats/$chat/_layout'
 import { Route as LayoutAccountLayoutNotificationsImport } from './routes/_layout/account/_layout/notifications'
 import { Route as LayoutAccountLayoutBillingImport } from './routes/_layout/account/_layout/billing'
-import { Route as LayoutProjectsProjectLayoutIndexImport } from './routes/_layout/projects/$project/_layout/index'
-import { Route as LayoutProjectsProjectLayoutUsersImport } from './routes/_layout/projects/$project/_layout/users'
-import { Route as LayoutProjectsProjectLayoutTeamImport } from './routes/_layout/projects/$project/_layout/team'
-import { Route as LayoutProjectsProjectLayoutMetricsImport } from './routes/_layout/projects/$project/_layout/metrics'
-import { Route as LayoutProjectsProjectLayoutEventsImport } from './routes/_layout/projects/$project/_layout/events'
-import { Route as LayoutProjectsProjectLayoutAnalyzeImport } from './routes/_layout/projects/$project/_layout/analyze'
-import { Route as LayoutProjectsProjectLayoutAdCampaignsImport } from './routes/_layout/projects/$project/_layout/ad-campaigns'
-import { Route as LayoutProjectsProjectLayoutSettingsLayoutImport } from './routes/_layout/projects/$project/_layout/settings/_layout'
-import { Route as LayoutProjectsProjectLayoutSettingsLayoutIndexImport } from './routes/_layout/projects/$project/_layout/settings/_layout/index'
-import { Route as LayoutProjectsProjectLayoutSettingsLayoutIntegrationsImport } from './routes/_layout/projects/$project/_layout/settings/_layout/integrations'
+import { Route as LayoutChatsChatLayoutIndexImport } from './routes/_layout/chats/$chat/_layout/index'
 
 // Create Virtual Routes
 
 const LayoutAccountImport = createFileRoute('/_layout/account')()
-const LayoutProjectsProjectImport = createFileRoute(
-  '/_layout/projects/$project',
-)()
-const LayoutProjectsProjectLayoutSettingsImport = createFileRoute(
-  '/_layout/projects/$project/_layout/settings',
-)()
+const LayoutChatsChatImport = createFileRoute('/_layout/chats/$chat')()
 
 // Create/Update Routes
 
@@ -89,15 +75,15 @@ const AuthEmailVerifyRoute = AuthEmailVerifyImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutProjectsProjectRoute = LayoutProjectsProjectImport.update({
-  id: '/projects/$project',
-  path: '/projects/$project',
+const LayoutChatsChatRoute = LayoutChatsChatImport.update({
+  id: '/chats/$chat',
+  path: '/chats/$chat',
   getParentRoute: () => LayoutRoute,
 } as any)
 
-const LayoutProjectsIndexRoute = LayoutProjectsIndexImport.update({
-  id: '/projects/',
-  path: '/projects/',
+const LayoutChatsIndexRoute = LayoutChatsIndexImport.update({
+  id: '/chats/',
+  path: '/chats/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -112,11 +98,10 @@ const LayoutAccountLayoutIndexRoute = LayoutAccountLayoutIndexImport.update({
   getParentRoute: () => LayoutAccountLayoutRoute,
 } as any)
 
-const LayoutProjectsProjectLayoutRoute =
-  LayoutProjectsProjectLayoutImport.update({
-    id: '/_layout',
-    getParentRoute: () => LayoutProjectsProjectRoute,
-  } as any)
+const LayoutChatsChatLayoutRoute = LayoutChatsChatLayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => LayoutChatsChatRoute,
+} as any)
 
 const LayoutAccountLayoutNotificationsRoute =
   LayoutAccountLayoutNotificationsImport.update({
@@ -133,81 +118,13 @@ const LayoutAccountLayoutBillingRoute = LayoutAccountLayoutBillingImport.update(
   } as any,
 )
 
-const LayoutProjectsProjectLayoutSettingsRoute =
-  LayoutProjectsProjectLayoutSettingsImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutIndexRoute =
-  LayoutProjectsProjectLayoutIndexImport.update({
+const LayoutChatsChatLayoutIndexRoute = LayoutChatsChatLayoutIndexImport.update(
+  {
     id: '/',
     path: '/',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutUsersRoute =
-  LayoutProjectsProjectLayoutUsersImport.update({
-    id: '/users',
-    path: '/users',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutTeamRoute =
-  LayoutProjectsProjectLayoutTeamImport.update({
-    id: '/team',
-    path: '/team',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutMetricsRoute =
-  LayoutProjectsProjectLayoutMetricsImport.update({
-    id: '/metrics',
-    path: '/metrics',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutEventsRoute =
-  LayoutProjectsProjectLayoutEventsImport.update({
-    id: '/events',
-    path: '/events',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutAnalyzeRoute =
-  LayoutProjectsProjectLayoutAnalyzeImport.update({
-    id: '/analyze',
-    path: '/analyze',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutAdCampaignsRoute =
-  LayoutProjectsProjectLayoutAdCampaignsImport.update({
-    id: '/ad-campaigns',
-    path: '/ad-campaigns',
-    getParentRoute: () => LayoutProjectsProjectLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutSettingsLayoutRoute =
-  LayoutProjectsProjectLayoutSettingsLayoutImport.update({
-    id: '/_layout',
-    getParentRoute: () => LayoutProjectsProjectLayoutSettingsRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutSettingsLayoutIndexRoute =
-  LayoutProjectsProjectLayoutSettingsLayoutIndexImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => LayoutProjectsProjectLayoutSettingsLayoutRoute,
-  } as any)
-
-const LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute =
-  LayoutProjectsProjectLayoutSettingsLayoutIntegrationsImport.update({
-    id: '/integrations',
-    path: '/integrations',
-    getParentRoute: () => LayoutProjectsProjectLayoutSettingsLayoutRoute,
-  } as any)
+    getParentRoute: () => LayoutChatsChatLayoutRoute,
+  } as any,
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -269,11 +186,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAccountLayoutImport
       parentRoute: typeof LayoutAccountRoute
     }
-    '/_layout/projects/': {
-      id: '/_layout/projects/'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof LayoutProjectsIndexImport
+    '/_layout/chats/': {
+      id: '/_layout/chats/'
+      path: '/chats'
+      fullPath: '/chats'
+      preLoaderRoute: typeof LayoutChatsIndexImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/account/_layout/billing': {
@@ -290,19 +207,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAccountLayoutNotificationsImport
       parentRoute: typeof LayoutAccountLayoutImport
     }
-    '/_layout/projects/$project': {
-      id: '/_layout/projects/$project'
-      path: '/projects/$project'
-      fullPath: '/projects/$project'
-      preLoaderRoute: typeof LayoutProjectsProjectImport
+    '/_layout/chats/$chat': {
+      id: '/_layout/chats/$chat'
+      path: '/chats/$chat'
+      fullPath: '/chats/$chat'
+      preLoaderRoute: typeof LayoutChatsChatImport
       parentRoute: typeof LayoutImport
     }
-    '/_layout/projects/$project/_layout': {
-      id: '/_layout/projects/$project/_layout'
-      path: '/projects/$project'
-      fullPath: '/projects/$project'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutImport
-      parentRoute: typeof LayoutProjectsProjectRoute
+    '/_layout/chats/$chat/_layout': {
+      id: '/_layout/chats/$chat/_layout'
+      path: '/chats/$chat'
+      fullPath: '/chats/$chat'
+      preLoaderRoute: typeof LayoutChatsChatLayoutImport
+      parentRoute: typeof LayoutChatsChatRoute
     }
     '/_layout/account/_layout/': {
       id: '/_layout/account/_layout/'
@@ -311,82 +228,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAccountLayoutIndexImport
       parentRoute: typeof LayoutAccountLayoutImport
     }
-    '/_layout/projects/$project/_layout/ad-campaigns': {
-      id: '/_layout/projects/$project/_layout/ad-campaigns'
-      path: '/ad-campaigns'
-      fullPath: '/projects/$project/ad-campaigns'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutAdCampaignsImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/analyze': {
-      id: '/_layout/projects/$project/_layout/analyze'
-      path: '/analyze'
-      fullPath: '/projects/$project/analyze'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutAnalyzeImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/events': {
-      id: '/_layout/projects/$project/_layout/events'
-      path: '/events'
-      fullPath: '/projects/$project/events'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutEventsImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/metrics': {
-      id: '/_layout/projects/$project/_layout/metrics'
-      path: '/metrics'
-      fullPath: '/projects/$project/metrics'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutMetricsImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/team': {
-      id: '/_layout/projects/$project/_layout/team'
-      path: '/team'
-      fullPath: '/projects/$project/team'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutTeamImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/users': {
-      id: '/_layout/projects/$project/_layout/users'
-      path: '/users'
-      fullPath: '/projects/$project/users'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutUsersImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/': {
-      id: '/_layout/projects/$project/_layout/'
+    '/_layout/chats/$chat/_layout/': {
+      id: '/_layout/chats/$chat/_layout/'
       path: '/'
-      fullPath: '/projects/$project/'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutIndexImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/settings': {
-      id: '/_layout/projects/$project/_layout/settings'
-      path: '/settings'
-      fullPath: '/projects/$project/settings'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutSettingsImport
-      parentRoute: typeof LayoutProjectsProjectLayoutImport
-    }
-    '/_layout/projects/$project/_layout/settings/_layout': {
-      id: '/_layout/projects/$project/_layout/settings/_layout'
-      path: '/settings'
-      fullPath: '/projects/$project/settings'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutImport
-      parentRoute: typeof LayoutProjectsProjectLayoutSettingsRoute
-    }
-    '/_layout/projects/$project/_layout/settings/_layout/integrations': {
-      id: '/_layout/projects/$project/_layout/settings/_layout/integrations'
-      path: '/integrations'
-      fullPath: '/projects/$project/settings/integrations'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutIntegrationsImport
-      parentRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutImport
-    }
-    '/_layout/projects/$project/_layout/settings/_layout/': {
-      id: '/_layout/projects/$project/_layout/settings/_layout/'
-      path: '/'
-      fullPath: '/projects/$project/settings/'
-      preLoaderRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutIndexImport
-      parentRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutImport
+      fullPath: '/chats/$chat/'
+      preLoaderRoute: typeof LayoutChatsChatLayoutIndexImport
+      parentRoute: typeof LayoutChatsChatLayoutImport
     }
   }
 }
@@ -420,100 +267,43 @@ const LayoutAccountRouteWithChildren = LayoutAccountRoute._addFileChildren(
   LayoutAccountRouteChildren,
 )
 
-interface LayoutProjectsProjectLayoutSettingsLayoutRouteChildren {
-  LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute
-  LayoutProjectsProjectLayoutSettingsLayoutIndexRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutIndexRoute
+interface LayoutChatsChatLayoutRouteChildren {
+  LayoutChatsChatLayoutIndexRoute: typeof LayoutChatsChatLayoutIndexRoute
 }
 
-const LayoutProjectsProjectLayoutSettingsLayoutRouteChildren: LayoutProjectsProjectLayoutSettingsLayoutRouteChildren =
-  {
-    LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute:
-      LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute,
-    LayoutProjectsProjectLayoutSettingsLayoutIndexRoute:
-      LayoutProjectsProjectLayoutSettingsLayoutIndexRoute,
-  }
+const LayoutChatsChatLayoutRouteChildren: LayoutChatsChatLayoutRouteChildren = {
+  LayoutChatsChatLayoutIndexRoute: LayoutChatsChatLayoutIndexRoute,
+}
 
-const LayoutProjectsProjectLayoutSettingsLayoutRouteWithChildren =
-  LayoutProjectsProjectLayoutSettingsLayoutRoute._addFileChildren(
-    LayoutProjectsProjectLayoutSettingsLayoutRouteChildren,
+const LayoutChatsChatLayoutRouteWithChildren =
+  LayoutChatsChatLayoutRoute._addFileChildren(
+    LayoutChatsChatLayoutRouteChildren,
   )
 
-interface LayoutProjectsProjectLayoutSettingsRouteChildren {
-  LayoutProjectsProjectLayoutSettingsLayoutRoute: typeof LayoutProjectsProjectLayoutSettingsLayoutRouteWithChildren
+interface LayoutChatsChatRouteChildren {
+  LayoutChatsChatLayoutRoute: typeof LayoutChatsChatLayoutRouteWithChildren
 }
 
-const LayoutProjectsProjectLayoutSettingsRouteChildren: LayoutProjectsProjectLayoutSettingsRouteChildren =
-  {
-    LayoutProjectsProjectLayoutSettingsLayoutRoute:
-      LayoutProjectsProjectLayoutSettingsLayoutRouteWithChildren,
-  }
-
-const LayoutProjectsProjectLayoutSettingsRouteWithChildren =
-  LayoutProjectsProjectLayoutSettingsRoute._addFileChildren(
-    LayoutProjectsProjectLayoutSettingsRouteChildren,
-  )
-
-interface LayoutProjectsProjectLayoutRouteChildren {
-  LayoutProjectsProjectLayoutAdCampaignsRoute: typeof LayoutProjectsProjectLayoutAdCampaignsRoute
-  LayoutProjectsProjectLayoutAnalyzeRoute: typeof LayoutProjectsProjectLayoutAnalyzeRoute
-  LayoutProjectsProjectLayoutEventsRoute: typeof LayoutProjectsProjectLayoutEventsRoute
-  LayoutProjectsProjectLayoutMetricsRoute: typeof LayoutProjectsProjectLayoutMetricsRoute
-  LayoutProjectsProjectLayoutTeamRoute: typeof LayoutProjectsProjectLayoutTeamRoute
-  LayoutProjectsProjectLayoutUsersRoute: typeof LayoutProjectsProjectLayoutUsersRoute
-  LayoutProjectsProjectLayoutIndexRoute: typeof LayoutProjectsProjectLayoutIndexRoute
-  LayoutProjectsProjectLayoutSettingsRoute: typeof LayoutProjectsProjectLayoutSettingsRouteWithChildren
+const LayoutChatsChatRouteChildren: LayoutChatsChatRouteChildren = {
+  LayoutChatsChatLayoutRoute: LayoutChatsChatLayoutRouteWithChildren,
 }
 
-const LayoutProjectsProjectLayoutRouteChildren: LayoutProjectsProjectLayoutRouteChildren =
-  {
-    LayoutProjectsProjectLayoutAdCampaignsRoute:
-      LayoutProjectsProjectLayoutAdCampaignsRoute,
-    LayoutProjectsProjectLayoutAnalyzeRoute:
-      LayoutProjectsProjectLayoutAnalyzeRoute,
-    LayoutProjectsProjectLayoutEventsRoute:
-      LayoutProjectsProjectLayoutEventsRoute,
-    LayoutProjectsProjectLayoutMetricsRoute:
-      LayoutProjectsProjectLayoutMetricsRoute,
-    LayoutProjectsProjectLayoutTeamRoute: LayoutProjectsProjectLayoutTeamRoute,
-    LayoutProjectsProjectLayoutUsersRoute:
-      LayoutProjectsProjectLayoutUsersRoute,
-    LayoutProjectsProjectLayoutIndexRoute:
-      LayoutProjectsProjectLayoutIndexRoute,
-    LayoutProjectsProjectLayoutSettingsRoute:
-      LayoutProjectsProjectLayoutSettingsRouteWithChildren,
-  }
-
-const LayoutProjectsProjectLayoutRouteWithChildren =
-  LayoutProjectsProjectLayoutRoute._addFileChildren(
-    LayoutProjectsProjectLayoutRouteChildren,
-  )
-
-interface LayoutProjectsProjectRouteChildren {
-  LayoutProjectsProjectLayoutRoute: typeof LayoutProjectsProjectLayoutRouteWithChildren
-}
-
-const LayoutProjectsProjectRouteChildren: LayoutProjectsProjectRouteChildren = {
-  LayoutProjectsProjectLayoutRoute:
-    LayoutProjectsProjectLayoutRouteWithChildren,
-}
-
-const LayoutProjectsProjectRouteWithChildren =
-  LayoutProjectsProjectRoute._addFileChildren(
-    LayoutProjectsProjectRouteChildren,
-  )
+const LayoutChatsChatRouteWithChildren = LayoutChatsChatRoute._addFileChildren(
+  LayoutChatsChatRouteChildren,
+)
 
 interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutAccountRoute: typeof LayoutAccountRouteWithChildren
-  LayoutProjectsIndexRoute: typeof LayoutProjectsIndexRoute
-  LayoutProjectsProjectRoute: typeof LayoutProjectsProjectRouteWithChildren
+  LayoutChatsIndexRoute: typeof LayoutChatsIndexRoute
+  LayoutChatsChatRoute: typeof LayoutChatsChatRouteWithChildren
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutAccountRoute: LayoutAccountRouteWithChildren,
-  LayoutProjectsIndexRoute: LayoutProjectsIndexRoute,
-  LayoutProjectsProjectRoute: LayoutProjectsProjectRouteWithChildren,
+  LayoutChatsIndexRoute: LayoutChatsIndexRoute,
+  LayoutChatsChatRoute: LayoutChatsChatRouteWithChildren,
 }
 
 const LayoutRouteWithChildren =
@@ -527,21 +317,12 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/': typeof LayoutIndexRoute
   '/account': typeof LayoutAccountLayoutRouteWithChildren
-  '/projects': typeof LayoutProjectsIndexRoute
+  '/chats': typeof LayoutChatsIndexRoute
   '/account/billing': typeof LayoutAccountLayoutBillingRoute
   '/account/notifications': typeof LayoutAccountLayoutNotificationsRoute
-  '/projects/$project': typeof LayoutProjectsProjectLayoutRouteWithChildren
+  '/chats/$chat': typeof LayoutChatsChatLayoutRouteWithChildren
   '/account/': typeof LayoutAccountLayoutIndexRoute
-  '/projects/$project/ad-campaigns': typeof LayoutProjectsProjectLayoutAdCampaignsRoute
-  '/projects/$project/analyze': typeof LayoutProjectsProjectLayoutAnalyzeRoute
-  '/projects/$project/events': typeof LayoutProjectsProjectLayoutEventsRoute
-  '/projects/$project/metrics': typeof LayoutProjectsProjectLayoutMetricsRoute
-  '/projects/$project/team': typeof LayoutProjectsProjectLayoutTeamRoute
-  '/projects/$project/users': typeof LayoutProjectsProjectLayoutUsersRoute
-  '/projects/$project/': typeof LayoutProjectsProjectLayoutIndexRoute
-  '/projects/$project/settings': typeof LayoutProjectsProjectLayoutSettingsLayoutRouteWithChildren
-  '/projects/$project/settings/integrations': typeof LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute
-  '/projects/$project/settings/': typeof LayoutProjectsProjectLayoutSettingsLayoutIndexRoute
+  '/chats/$chat/': typeof LayoutChatsChatLayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -551,18 +332,10 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/': typeof LayoutIndexRoute
   '/account': typeof LayoutAccountLayoutIndexRoute
-  '/projects': typeof LayoutProjectsIndexRoute
+  '/chats': typeof LayoutChatsIndexRoute
   '/account/billing': typeof LayoutAccountLayoutBillingRoute
   '/account/notifications': typeof LayoutAccountLayoutNotificationsRoute
-  '/projects/$project': typeof LayoutProjectsProjectLayoutIndexRoute
-  '/projects/$project/ad-campaigns': typeof LayoutProjectsProjectLayoutAdCampaignsRoute
-  '/projects/$project/analyze': typeof LayoutProjectsProjectLayoutAnalyzeRoute
-  '/projects/$project/events': typeof LayoutProjectsProjectLayoutEventsRoute
-  '/projects/$project/metrics': typeof LayoutProjectsProjectLayoutMetricsRoute
-  '/projects/$project/team': typeof LayoutProjectsProjectLayoutTeamRoute
-  '/projects/$project/users': typeof LayoutProjectsProjectLayoutUsersRoute
-  '/projects/$project/settings': typeof LayoutProjectsProjectLayoutSettingsLayoutIndexRoute
-  '/projects/$project/settings/integrations': typeof LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute
+  '/chats/$chat': typeof LayoutChatsChatLayoutIndexRoute
 }
 
 export interface FileRoutesById {
@@ -575,23 +348,13 @@ export interface FileRoutesById {
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/account': typeof LayoutAccountRouteWithChildren
   '/_layout/account/_layout': typeof LayoutAccountLayoutRouteWithChildren
-  '/_layout/projects/': typeof LayoutProjectsIndexRoute
+  '/_layout/chats/': typeof LayoutChatsIndexRoute
   '/_layout/account/_layout/billing': typeof LayoutAccountLayoutBillingRoute
   '/_layout/account/_layout/notifications': typeof LayoutAccountLayoutNotificationsRoute
-  '/_layout/projects/$project': typeof LayoutProjectsProjectRouteWithChildren
-  '/_layout/projects/$project/_layout': typeof LayoutProjectsProjectLayoutRouteWithChildren
+  '/_layout/chats/$chat': typeof LayoutChatsChatRouteWithChildren
+  '/_layout/chats/$chat/_layout': typeof LayoutChatsChatLayoutRouteWithChildren
   '/_layout/account/_layout/': typeof LayoutAccountLayoutIndexRoute
-  '/_layout/projects/$project/_layout/ad-campaigns': typeof LayoutProjectsProjectLayoutAdCampaignsRoute
-  '/_layout/projects/$project/_layout/analyze': typeof LayoutProjectsProjectLayoutAnalyzeRoute
-  '/_layout/projects/$project/_layout/events': typeof LayoutProjectsProjectLayoutEventsRoute
-  '/_layout/projects/$project/_layout/metrics': typeof LayoutProjectsProjectLayoutMetricsRoute
-  '/_layout/projects/$project/_layout/team': typeof LayoutProjectsProjectLayoutTeamRoute
-  '/_layout/projects/$project/_layout/users': typeof LayoutProjectsProjectLayoutUsersRoute
-  '/_layout/projects/$project/_layout/': typeof LayoutProjectsProjectLayoutIndexRoute
-  '/_layout/projects/$project/_layout/settings': typeof LayoutProjectsProjectLayoutSettingsRouteWithChildren
-  '/_layout/projects/$project/_layout/settings/_layout': typeof LayoutProjectsProjectLayoutSettingsLayoutRouteWithChildren
-  '/_layout/projects/$project/_layout/settings/_layout/integrations': typeof LayoutProjectsProjectLayoutSettingsLayoutIntegrationsRoute
-  '/_layout/projects/$project/_layout/settings/_layout/': typeof LayoutProjectsProjectLayoutSettingsLayoutIndexRoute
+  '/_layout/chats/$chat/_layout/': typeof LayoutChatsChatLayoutIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -604,21 +367,12 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/'
     | '/account'
-    | '/projects'
+    | '/chats'
     | '/account/billing'
     | '/account/notifications'
-    | '/projects/$project'
+    | '/chats/$chat'
     | '/account/'
-    | '/projects/$project/ad-campaigns'
-    | '/projects/$project/analyze'
-    | '/projects/$project/events'
-    | '/projects/$project/metrics'
-    | '/projects/$project/team'
-    | '/projects/$project/users'
-    | '/projects/$project/'
-    | '/projects/$project/settings'
-    | '/projects/$project/settings/integrations'
-    | '/projects/$project/settings/'
+    | '/chats/$chat/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth/email-verify'
@@ -627,18 +381,10 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/'
     | '/account'
-    | '/projects'
+    | '/chats'
     | '/account/billing'
     | '/account/notifications'
-    | '/projects/$project'
-    | '/projects/$project/ad-campaigns'
-    | '/projects/$project/analyze'
-    | '/projects/$project/events'
-    | '/projects/$project/metrics'
-    | '/projects/$project/team'
-    | '/projects/$project/users'
-    | '/projects/$project/settings'
-    | '/projects/$project/settings/integrations'
+    | '/chats/$chat'
   id:
     | '__root__'
     | '/_layout'
@@ -649,23 +395,13 @@ export interface FileRouteTypes {
     | '/_layout/'
     | '/_layout/account'
     | '/_layout/account/_layout'
-    | '/_layout/projects/'
+    | '/_layout/chats/'
     | '/_layout/account/_layout/billing'
     | '/_layout/account/_layout/notifications'
-    | '/_layout/projects/$project'
-    | '/_layout/projects/$project/_layout'
+    | '/_layout/chats/$chat'
+    | '/_layout/chats/$chat/_layout'
     | '/_layout/account/_layout/'
-    | '/_layout/projects/$project/_layout/ad-campaigns'
-    | '/_layout/projects/$project/_layout/analyze'
-    | '/_layout/projects/$project/_layout/events'
-    | '/_layout/projects/$project/_layout/metrics'
-    | '/_layout/projects/$project/_layout/team'
-    | '/_layout/projects/$project/_layout/users'
-    | '/_layout/projects/$project/_layout/'
-    | '/_layout/projects/$project/_layout/settings'
-    | '/_layout/projects/$project/_layout/settings/_layout'
-    | '/_layout/projects/$project/_layout/settings/_layout/integrations'
-    | '/_layout/projects/$project/_layout/settings/_layout/'
+    | '/_layout/chats/$chat/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -707,8 +443,8 @@ export const routeTree = rootRoute
       "children": [
         "/_layout/",
         "/_layout/account",
-        "/_layout/projects/",
-        "/_layout/projects/$project"
+        "/_layout/chats/",
+        "/_layout/chats/$chat"
       ]
     },
     "/auth/email-verify": {
@@ -743,8 +479,8 @@ export const routeTree = rootRoute
         "/_layout/account/_layout/"
       ]
     },
-    "/_layout/projects/": {
-      "filePath": "_layout/projects/index.tsx",
+    "/_layout/chats/": {
+      "filePath": "_layout/chats/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/account/_layout/billing": {
@@ -755,81 +491,27 @@ export const routeTree = rootRoute
       "filePath": "_layout/account/_layout/notifications.tsx",
       "parent": "/_layout/account/_layout"
     },
-    "/_layout/projects/$project": {
-      "filePath": "_layout/projects/$project",
+    "/_layout/chats/$chat": {
+      "filePath": "_layout/chats/$chat",
       "parent": "/_layout",
       "children": [
-        "/_layout/projects/$project/_layout"
+        "/_layout/chats/$chat/_layout"
       ]
     },
-    "/_layout/projects/$project/_layout": {
-      "filePath": "_layout/projects/$project/_layout.tsx",
-      "parent": "/_layout/projects/$project",
+    "/_layout/chats/$chat/_layout": {
+      "filePath": "_layout/chats/$chat/_layout.tsx",
+      "parent": "/_layout/chats/$chat",
       "children": [
-        "/_layout/projects/$project/_layout/ad-campaigns",
-        "/_layout/projects/$project/_layout/analyze",
-        "/_layout/projects/$project/_layout/events",
-        "/_layout/projects/$project/_layout/metrics",
-        "/_layout/projects/$project/_layout/team",
-        "/_layout/projects/$project/_layout/users",
-        "/_layout/projects/$project/_layout/",
-        "/_layout/projects/$project/_layout/settings"
+        "/_layout/chats/$chat/_layout/"
       ]
     },
     "/_layout/account/_layout/": {
       "filePath": "_layout/account/_layout/index.tsx",
       "parent": "/_layout/account/_layout"
     },
-    "/_layout/projects/$project/_layout/ad-campaigns": {
-      "filePath": "_layout/projects/$project/_layout/ad-campaigns.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/analyze": {
-      "filePath": "_layout/projects/$project/_layout/analyze.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/events": {
-      "filePath": "_layout/projects/$project/_layout/events.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/metrics": {
-      "filePath": "_layout/projects/$project/_layout/metrics.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/team": {
-      "filePath": "_layout/projects/$project/_layout/team.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/users": {
-      "filePath": "_layout/projects/$project/_layout/users.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/": {
-      "filePath": "_layout/projects/$project/_layout/index.tsx",
-      "parent": "/_layout/projects/$project/_layout"
-    },
-    "/_layout/projects/$project/_layout/settings": {
-      "filePath": "_layout/projects/$project/_layout/settings",
-      "parent": "/_layout/projects/$project/_layout",
-      "children": [
-        "/_layout/projects/$project/_layout/settings/_layout"
-      ]
-    },
-    "/_layout/projects/$project/_layout/settings/_layout": {
-      "filePath": "_layout/projects/$project/_layout/settings/_layout.tsx",
-      "parent": "/_layout/projects/$project/_layout/settings",
-      "children": [
-        "/_layout/projects/$project/_layout/settings/_layout/integrations",
-        "/_layout/projects/$project/_layout/settings/_layout/"
-      ]
-    },
-    "/_layout/projects/$project/_layout/settings/_layout/integrations": {
-      "filePath": "_layout/projects/$project/_layout/settings/_layout/integrations.tsx",
-      "parent": "/_layout/projects/$project/_layout/settings/_layout"
-    },
-    "/_layout/projects/$project/_layout/settings/_layout/": {
-      "filePath": "_layout/projects/$project/_layout/settings/_layout/index.tsx",
-      "parent": "/_layout/projects/$project/_layout/settings/_layout"
+    "/_layout/chats/$chat/_layout/": {
+      "filePath": "_layout/chats/$chat/_layout/index.tsx",
+      "parent": "/_layout/chats/$chat/_layout"
     }
   }
 }

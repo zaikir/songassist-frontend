@@ -1,101 +1,42 @@
-import { useAtomValue } from 'jotai';
-import Markdown from 'react-markdown';
-import debounce from 'lodash/debounce';
-import { useMemo, useState, useEffect } from 'react';
+import { getDefaultStore } from 'jotai';
+import { useRef, useState } from 'react';
+import { useRouter } from '@tanstack/react-router';
 
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-  Box,
-  Paper,
-  Stack,
-  Button,
-  Select,
-  MenuItem,
-  Container,
-  TextField,
-  Typography,
-  InputLabel,
-  FormControl,
-} from '@mui/material';
+import { Box, Paper, Stack, Button, Container, Typography } from '@mui/material';
 
 import { api } from 'src/api';
-import { DashboardContent, useDashboardLayout } from 'src/shared/layouts/dashboard';
+import { DashboardContent } from 'src/shared/layouts/dashboard';
 
+import { chatsAtom } from '../bootstrap';
 import { SongSelectField } from './song-autocomplete';
 
-type SongSuggestion = {
-  song: string;
-};
-
 export function OverviewPage() {
-  const { headerContainerRefAtom } = useDashboardLayout();
-  // const selectedProject = useSelectedProject();
-
-  const headerContainerRef = useAtomValue(headerContainerRefAtom);
-
+  const router = useRouter();
   const [songTitle, setSongTitle] = useState<string>('');
-  const [resultMarkdown, setResultMarkdown] = useState<string>('');
-  const [rating, setRating] = useState<number | null>(null);
-  const [options, setOptions] = useState<SongSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [model, setModel] = useState<string>('sonar-pro');
-  const [temperature, setTemperature] = useState(0.3);
 
-  const searchSong = (query: string) => api.searchSong(query);
-
-  // Create a debounced version of the API call
-  const debouncedSearch = useMemo(
-    () =>
-      debounce(async (value: string) => {
-        setIsSearching(true);
-        try {
-          const results = await searchSong(value);
-          setOptions(results as any[]);
-        } catch (error) {
-          console.error('Error fetching song suggestions:', error);
-          setOptions([]);
-        } finally {
-          setIsSearching(false);
-        }
-      }, 150),
-
-    []
-  );
-
-  // Clean up the debounced function on unmount
-  useEffect(
-    () => () => {
-      debouncedSearch.cancel();
-    },
-    [debouncedSearch]
-  );
-
-  const handleInputChange = (_event: React.SyntheticEvent, value: string) => {
-    setSongTitle(value);
-    if (value.length >= 2) {
-      debouncedSearch(value);
-    } else {
-      setOptions([]);
-    }
-  };
-
-  const handleRatingChange = (_event: React.SyntheticEvent, newValue: number | null) => {
-    setRating(newValue);
-  };
+  const randomTitleRef = useRef(titles[Math.floor(Math.random() * titles.length)]);
 
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
 
-      const { result } = await api.processPrompt({
+      const { chatId } = await api.processPrompt({
         song: songTitle,
-        temperature,
-        model,
       });
-      if (result) {
-        setResultMarkdown(result);
-      }
+
+      const store = getDefaultStore();
+      store.set(chatsAtom, [
+        {
+          id: chatId,
+          request: songTitle,
+          createdAt: new Date().toISOString(),
+        },
+        ...store.get(chatsAtom),
+      ]);
+
+      router.navigate({ to: '/chats/$chat', params: { chat: chatId } });
     } catch (error) {
       console.error('Error processing prompt:', error);
     } finally {
@@ -103,27 +44,19 @@ export function OverviewPage() {
     }
   };
 
-  if (!headerContainerRef) {
-    return null;
-  }
-
   return (
     <DashboardContent maxWidth={false}>
-      {/* <LayoutHeader /> */}
-
-      <Container maxWidth="xl" sx={{ mt: 8 }}>
+      <Container maxWidth="md" sx={{ mt: 8 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
-          {/* Heading */}
           <Typography variant="h4" gutterBottom>
-            Enter Song Title to Get Information
+            {randomTitleRef.current}
           </Typography>
 
-          {/* Autocomplete input container */}
           <Box
             sx={{
               width: '100%',
-              maxWidth: 600,
-              mt: 2,
+              // maxWidth: 600,
+              mt: 4,
               boxShadow: 3,
               borderRadius: 3,
               border: '1px solid #f3f3f3',
@@ -131,87 +64,13 @@ export function OverviewPage() {
             }}
           >
             <Stack spacing={3}>
-              <TextField
-                variant="outlined"
-                placeholder="Temperature"
-                type="number"
-                label="Temperature"
-                value={temperature}
-                onChange={(e) => setTemperature(parseFloat(e.target.value))}
-              />
-              <FormControl fullWidth>
-                <InputLabel id="simple-select-label">AI Model</InputLabel>
-                <Select
-                  labelId="simple-select-label"
-                  value={model}
-                  label="AI Model"
-                  onChange={(x) => setModel(x.target.value)}
-                >
-                  <MenuItem value="sonar">sonar</MenuItem>
-                  <MenuItem value="sonar-pro">sonar-pro</MenuItem>
-                  <MenuItem value="gpt-4o-mini-search-preview">gpt-4o-mini-search-preview</MenuItem>
-                  <MenuItem value="gpt-4o-search-preview">
-                    gpt-4o-search-preview (expensive)
-                  </MenuItem>
-                </Select>
-              </FormControl>
-
               <SongSelectField
-                // value={songTitle}
                 onChange={(x) => {
                   setSongTitle(x as any);
                 }}
                 label=""
               />
-              {/* <Autocomplete
-                freeSolo
-                options={options}
-                // loading={isSearching}
-                value={songTitle}
-                onInputChange={handleInputChange}
-                onChange={(event, newValue) => {
-                  if (typeof newValue === 'string') {
-                    setSongTitle(newValue);
-                  } else if (newValue && typeof newValue === 'object') {
-                    setSongTitle(newValue.song);
-                  }
-                }}
-                getOptionLabel={(option) => (typeof option === 'string' ? option : option.song)}
-                filterOptions={(x) => x}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Enter title of the song"
-                    variant="outlined"
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          border: 'none',
-                        },
-                        '&:hover fieldset': {
-                          border: 'none',
-                        },
-                        '&.Mui-focused fieldset': {
-                          border: 'none',
-                        },
-                      },
-                      // Ensure the input height stays the same
-                      input: { height: '50px' },
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      sx: { height: '50px' },
-                      endAdornment: (
-                        <>
-                          {isSearching ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-                filterSelectedOptions
-              /> */}
+
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                   variant="contained"
@@ -224,18 +83,6 @@ export function OverviewPage() {
             </Stack>
           </Box>
 
-          {!isLoading && resultMarkdown && (
-            <Paper
-              elevation={0}
-              sx={{ mt: 4, p: 2, width: '100%', ul: { listStyleType: 'unset', 'li p': { my: 1 } } }}
-            >
-              <Markdown>{resultMarkdown}</Markdown>
-              {/* <Typography variant="h6" sx={{ mt: 2 }}>
-                Rate the response:
-              </Typography>
-              <Rating name="response-rating" value={rating} onChange={handleRatingChange} /> */}
-            </Paper>
-          )}
           {isLoading && (
             <Paper
               elevation={0}
@@ -249,8 +96,7 @@ export function OverviewPage() {
                 flexDirection: 'column',
               }}
             >
-              <Typography variant="h6">Generating response... It may take a few minutes</Typography>
-              <CircularProgress sx={{ mt: 2 }} />
+              <CircularProgress sx={{ mt: 2 }} size={16} />
             </Paper>
           )}
         </Box>
@@ -258,3 +104,24 @@ export function OverviewPage() {
     </DashboardContent>
   );
 }
+
+const titles = [
+  "Give us a title and we'll give you the all the trivia.",
+  "Give us a title and we'll give you the whole story.",
+  "Give us a title and we'll give you everything but the melody.",
+  "Give us a title and we'll give you the beats behind it.",
+  "Give us a title and we'll give you the secrets behind the song.",
+  "Give us a title and we'll give you the facts, the feels, the fire.",
+  "Give us a title and we'll give you the story behind the sound.",
+  "Give us a title and we'll give you the vibe behind the voice.",
+  "Give us a title and we'll give you the music intel you need.",
+  "Give us a title and we'll give you the why behind the hit.",
+  "Give us a title and we'll give you the trivia that turns heads.",
+  "Give us a title and we'll give you the intel you need.",
+  'Give us a title and we’ll give you the riff and the reason.',
+  'Give us a title and we’ll give you trivia worth tuning in for.',
+  'Give us a title and we’ll give you the truth behind the tune.',
+  'Give us a title and we’ll give you the magic behind the music.',
+  'Give us a title and we’ll give you the whole backbeat.',
+  'Give us a title and we’ll give you what the charts don’t show.',
+];

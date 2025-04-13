@@ -1,9 +1,5 @@
-import type { Project } from 'src/types/entities';
-import type { NavSectionProps } from 'src/components/nav-section';
-
 import { CONFIG } from 'src/global-config';
 
-import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -12,7 +8,7 @@ const icon = (name: string) => (
   <SvgColor src={`${CONFIG.assetsDir}/assets/icons/navbar/${name}.svg`} />
 );
 
-const ICONS = {
+export const ICONS = {
   job: icon('ic-job'),
   blog: icon('ic-blog'),
   chat: icon('ic-chat'),
@@ -40,38 +36,3 @@ const ICONS = {
   dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
 };
-
-// ----------------------------------------------------------------------
-
-export const navData = (project: Project) =>
-  [
-    /**
-     * Overview
-     */
-    {
-      subheader: '',
-      items: [
-        {
-          title: 'Assistent',
-          path: `/projects/${project.id}`,
-          icon: ICONS.chat,
-        },
-      ],
-    },
-    {
-      subheader: 'Project Management',
-      items: [
-        {
-          title: 'Team',
-          path: `/projects/${project.id}/team`,
-          icon: <Iconify icon="mdi:domain" />,
-        },
-        {
-          title: 'Settings',
-          path: `/projects/${project.id}/settings`,
-          icon: <Iconify icon="tabler:settings" />,
-          exact: false,
-        },
-      ],
-    },
-  ] as NavSectionProps['data'];

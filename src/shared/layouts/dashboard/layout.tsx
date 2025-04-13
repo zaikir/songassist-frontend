@@ -225,7 +225,7 @@ export function DashboardLayout({
       /** **************************************
        * @Sidebar
        *************************************** */
-      sidebarSection={isNavHorizontal ? null : renderSidebar()}
+      sidebarSection={renderSidebar()}
       /** **************************************
        * @Footer
        *************************************** */

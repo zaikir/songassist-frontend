@@ -7,17 +7,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { Card, Container } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Card, Button, Container } from '@mui/material';
 
 import { api } from 'src/api';
-import { imageToBase64, getRandomAvatarSVG } from 'src/shared/utils/image';
+import { imageToBase64 } from 'src/shared/utils/image';
 
 import { toast } from 'src/components/snackbar';
-import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
 import { userAtom } from '../bootstrap';
+import { NewProjectFormFields } from '../projects/components/new-project-form-fields';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +31,9 @@ export const UpdateUserSchema = zod.object({
     .email({ message: 'Email must be a valid email address!' })
     .readonly(),
   avatarUrl: schemaHelper.file({ message: 'Avatar is required!' }),
+  language: zod.string().min(1, { message: 'Language is required!' }),
+  country: zod.string().min(1, { message: 'Country is required!' }),
+  city: zod.string().min(1, { message: 'City is required!' }),
 });
 
 // ----------------------------------------------------------------------
@@ -42,12 +45,18 @@ export function AccountPage() {
     name: user.name,
     email: user.email,
     avatarUrl: user.avatarUrl,
+    language: user.language!,
+    country: user.country!,
+    city: user.city!,
   };
 
   const defaultValues: UpdateUserSchemaType = {
     name: '',
     email: '',
     avatarUrl: null,
+    language: '',
+    country: '',
+    city: '',
   };
 
   const methods = useForm<UpdateUserSchemaType>({
@@ -71,8 +80,8 @@ export function AccountPage() {
       });
 
       setUser({ ...user, ...updatedUser });
-      toast.success('Update saved!');
-      methods.reset(updatedUser);
+      toast.success('Saved!');
+      methods.reset(updatedUser as any);
     } catch (error) {
       console.error(error);
     }
@@ -87,7 +96,7 @@ export function AccountPage() {
             spacing={{ xs: 2, sm: 4 }}
             alignItems={{ sm: 'flex-start' }}
           >
-            <Field.UploadAvatar
+            {/* <Field.UploadAvatar
               name="avatarUrl"
               maxSize={3145728}
               sx={{
@@ -110,7 +119,7 @@ export function AccountPage() {
                   </Button>
                 </Box>
               }
-            />
+            /> */}
 
             <Box
               sx={{
@@ -123,7 +132,7 @@ export function AccountPage() {
               }}
             >
               <Field.Text name="email" label="Email address (read-only)" disabled />
-              <Field.Text name="name" label="Name" />
+              <NewProjectFormFields />
             </Box>
           </Stack>
           <Stack spacing={3} sx={{ mt: 3, alignItems: 'flex-end' }}>

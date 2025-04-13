@@ -11,7 +11,6 @@ import { api } from 'src/api';
 import { PromiseUtils } from 'src/shared/utils/promise';
 
 import { Iconify } from 'src/components/iconify';
-import { SvgColor } from 'src/components/svg-color';
 import { Form, Field } from 'src/components/hook-form';
 import { LoadingButton } from 'src/components/loading-button';
 
@@ -75,15 +74,11 @@ export function SignInPage() {
   const renderForm = () => (
     <Box sx={{ gap: 3, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ gap: 1.5, display: 'flex', flexDirection: 'column' }}>
-        <SvgColor src="/assets/icons/logo.svg" sx={{ width: '100%', height: 200 }} />
+        <Box component="img" alt="Full logo" src="/assets/icons/logo.svg" sx={{ width: '100%' }} />
 
         <LoadingButton fullWidth size="large" variant="outlined" onClick={handleSignInWithGoogle}>
           <Iconify icon="devicon:google" width={24} sx={{ mr: 2 }} />
           Log in with Google
-        </LoadingButton>
-        <LoadingButton fullWidth size="large" variant="outlined" onClick={handleSignInWithGithub}>
-          <Iconify icon="devicon:github" width={24} sx={{ mr: 2 }} />
-          Log in with Github
         </LoadingButton>
         <Divider>
           <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>

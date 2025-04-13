@@ -29,7 +29,6 @@ interface SongOption {
 
 // Extend the TextField props while overriding onChange and value types.
 export interface SongSelectFieldProps extends Omit<TextFieldProps, 'onChange' | 'value'> {
-  projectId: string;
   fullWidth?: boolean;
   value?: SongOption | null;
   required?: boolean;
@@ -40,7 +39,6 @@ export interface SongSelectFieldProps extends Omit<TextFieldProps, 'onChange' | 
 }
 
 export function SongSelectField({
-  projectId,
   fullWidth = true,
   value,
   required,
@@ -70,7 +68,7 @@ export function SongSelectField({
         setIsLoading(true);
 
         try {
-          const results = await api.searchSong(projectId, request);
+          const results = await api.searchSong(request);
           callback(results as any);
         } catch (error) {
           callback([]);
@@ -78,7 +76,7 @@ export function SongSelectField({
           setIsLoading(false);
         }
       }, 400),
-    [projectId]
+    []
   );
 
   // Trigger a new API search when the input value changes.

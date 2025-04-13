@@ -27,9 +27,9 @@ export default (axiosInstance: AxiosInstance) => {
     }[];
   }
 
-  async function searchSong(projectId: string, song: string) {
+  async function searchSong(song: string) {
     const { data } = await axiosInstance.post(
-      `/projects/${projectId}/search-song?query=${encodeURIComponent(song)}`,
+      `/projects/search-song?query=${encodeURIComponent(song)}`,
       {
         search: song,
       }
@@ -45,10 +45,10 @@ export default (axiosInstance: AxiosInstance) => {
     }[];
   }
 
-  async function processPrompt(projectId: string, payload: any) {
+  async function processPrompt(payload: any) {
     // First request to get the generation ID.
     const { data: initialData } = await axiosInstance.post<{ generationId: string }>(
-      `/projects/${projectId}/prompt`,
+      `/projects/prompt`,
       payload
     );
     const generationId = initialData.generationId;
@@ -57,7 +57,7 @@ export default (axiosInstance: AxiosInstance) => {
     let result = null;
     while (true) {
       const { data } = await axiosInstance.get<{ result: string | null }>(
-        `/projects/${projectId}/prompt-status?id=${generationId}`
+        `/projects/prompt-status?id=${generationId}`
       );
 
       if (data.result !== null) {

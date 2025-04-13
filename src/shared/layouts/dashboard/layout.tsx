@@ -27,7 +27,6 @@ import { HeaderSection } from '../core/header-section';
 import { LayoutSection } from '../core/layout-section';
 import { useDashboardLayout } from './use-dashboard-layout';
 import { AccountDrawer } from '../components/account-drawer';
-import { LanguagePopover } from '../components/language-popover';
 import { navData as dashboardNavData } from '../nav-config-dashboard';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
 
@@ -164,12 +163,12 @@ export function DashboardLayout({
           {/* <Searchbar data={navData} /> */}
 
           {/** @slot Language popover */}
-          <LanguagePopover
+          {/* <LanguagePopover
             data={[
               { value: 'en', label: 'English', countryCode: 'GB' },
               { value: 'ru', label: 'Russian', countryCode: 'RU', disabled: true },
             ]}
-          />
+          /> */}
 
           {/** @slot Notifications popover */}
           {/* <NotificationsDrawer data={_notifications} /> */}

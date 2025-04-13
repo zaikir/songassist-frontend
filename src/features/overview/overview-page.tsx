@@ -9,7 +9,6 @@ import {
   Paper,
   Stack,
   Button,
-  Portal,
   Select,
   MenuItem,
   Container,
@@ -23,7 +22,6 @@ import { api } from 'src/api';
 import { DashboardContent, useDashboardLayout } from 'src/shared/layouts/dashboard';
 
 import { SongSelectField } from './song-autocomplete';
-import { ProjectSelector, useSelectedProject } from '../projects';
 
 type SongSuggestion = {
   song: string;
@@ -31,7 +29,7 @@ type SongSuggestion = {
 
 export function OverviewPage() {
   const { headerContainerRefAtom } = useDashboardLayout();
-  const selectedProject = useSelectedProject();
+  // const selectedProject = useSelectedProject();
 
   const headerContainerRef = useAtomValue(headerContainerRefAtom);
 
@@ -44,7 +42,7 @@ export function OverviewPage() {
   const [model, setModel] = useState<string>('sonar-pro');
   const [temperature, setTemperature] = useState(0.3);
 
-  const searchSong = (query: string) => api.searchSong(selectedProject!.id, query);
+  const searchSong = (query: string) => api.searchSong(query);
 
   // Create a debounced version of the API call
   const debouncedSearch = useMemo(
@@ -61,8 +59,8 @@ export function OverviewPage() {
           setIsSearching(false);
         }
       }, 150),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedProject]
+
+    []
   );
 
   // Clean up the debounced function on unmount
@@ -90,7 +88,7 @@ export function OverviewPage() {
     try {
       setIsLoading(true);
 
-      const { result } = await api.processPrompt(selectedProject!.id, {
+      const { result } = await api.processPrompt({
         song: songTitle,
         temperature,
         model,
@@ -111,7 +109,7 @@ export function OverviewPage() {
 
   return (
     <DashboardContent maxWidth={false}>
-      <LayoutHeader />
+      {/* <LayoutHeader /> */}
 
       <Container maxWidth="xl" sx={{ mt: 8 }}>
         <Box display="flex" flexDirection="column" alignItems="center">
@@ -163,7 +161,6 @@ export function OverviewPage() {
                 onChange={(x) => {
                   setSongTitle(x as any);
                 }}
-                projectId={selectedProject!.id}
                 label=""
               />
               {/* <Autocomplete
@@ -259,20 +256,5 @@ export function OverviewPage() {
         </Box>
       </Container>
     </DashboardContent>
-  );
-}
-
-function LayoutHeader() {
-  const { headerContainerRefAtom } = useDashboardLayout();
-  const headerContainerRef = useAtomValue(headerContainerRefAtom);
-
-  if (!headerContainerRef) {
-    return null;
-  }
-
-  return (
-    <Portal container={headerContainerRef}>
-      <ProjectSelector />
-    </Portal>
   );
 }

@@ -171,7 +171,7 @@ export function ChatPage({ id }: Props) {
                   return (
                     <li>
                       {text}
-                      <Box sx={{ display: 'inline' }}>
+                      <Box sx={{ display: 'inline', ml: 0.5 }}>
                         <Tooltip title="Like" enterDelay={500}>
                           <IconButton
                             size="small"
@@ -200,6 +200,7 @@ export function ChatPage({ id }: Props) {
                               color: 'success',
                             })}
                             sx={{
+                              mt: -0.5,
                               opacity: isLiked ? 1 : 0.5,
                               '&:hover': {
                                 opacity: 1,
@@ -237,6 +238,7 @@ export function ChatPage({ id }: Props) {
                               });
                             }}
                             sx={{
+                              mt: -0.5,
                               ml: 0.5,
                               opacity: isDisliked ? 1 : 0.5,
                               '&:hover': {

@@ -119,7 +119,7 @@ export function NewProjectDialog({ initial, open, onClose }: ProjectCreationDial
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle>Welcome to Songassist</DialogTitle>
+      <DialogTitle>Welcome to SongAssist</DialogTitle>
       <DialogContent>
         <Form methods={methods} onSubmit={onSubmit}>
           <Box

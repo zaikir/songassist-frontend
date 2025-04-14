@@ -60,7 +60,7 @@ export function DashboardLayout({
   const theme = useTheme();
   const settings = useSettingsContext();
   const chats = useAtomValue(chatsAtom);
-  console.log({ chats });
+
   const { headerContainerRefAtom } = useDashboardLayout();
 
   const navVars = dashboardNavColorVars(theme, settings.state.navColor, settings.state.navLayout);
@@ -308,7 +308,6 @@ function getNavData(chats: any[]) {
     groups.get(label)!.push(chat);
   });
 
-  console.log(groups);
   const navData = Array.from(groups.entries()).map(([subheader, items]) => ({
     subheader,
     items: items.map((chat) => ({

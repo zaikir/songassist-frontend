@@ -35,9 +35,9 @@ export function NavSectionVertical({
       {...other}
     >
       <NavUl sx={{ flex: '1 1 auto', gap: 'var(--nav-item-gap)' }}>
-        {data.map((group) => (
+        {data.map((group, idx) => (
           <Group
-            key={group.subheader ?? group.items[0].title}
+            key={`${group.subheader ?? group.items[0].title}_${idx}`}
             subheader={group.subheader}
             items={group.items}
             render={render}

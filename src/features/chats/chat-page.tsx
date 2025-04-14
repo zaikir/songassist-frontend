@@ -1,49 +1,54 @@
+import type { Chat } from 'src/types/entities';
+
 import { useAtomValue } from 'jotai';
 import ReactMarkdown from 'react-markdown';
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-import {
-  Box,
-  Paper,
-  Button,
-  Container,
-  Accordion,
-  Typography,
-  AccordionSummary,
-  AccordionDetails,
-} from '@mui/material';
+import { Box, Paper, Button, Tooltip, Container, Typography, IconButton } from '@mui/material';
 
 import { api } from 'src/api';
 
+import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { AnimateLogoZoom } from 'src/components/animate';
 
 import { chatsAtom } from '../bootstrap';
+import { ReviewDialog } from './chat-review-dialog';
 
 type Props = {
   id: string;
 };
 
+type ChatInfo = Chat & {
+  feedbacks: {
+    text: string;
+    feedback: number;
+  }[];
+};
+
 export function ChatPage({ id }: Props) {
   const chats = useAtomValue(chatsAtom);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const chat = chats.find((x) => x.id === id);
-  const [markdown, setMarkdown] = useState<string | null>(null);
-  const [systemInfo, setSystemInfo] = useState<{
-    searchUserPrompt: string;
-    searchResponse: string;
-    postSystemPrompt: string;
-    postUserPrompt: string;
-    response: string;
-  } | null>(null);
+  const [chatInfo, setChatInfo] = useState<ChatInfo | null>(null);
   const navigate = useNavigate();
   const waitingTextRef = useRef(loadingTexts[Math.floor(Math.random() * loadingTexts.length)]);
 
   useEffect(() => {
     (async () => {
       const response = await api.waitForChatResponse(id);
-      setMarkdown(response?.response ?? 'Generation error');
-      setSystemInfo(response.systemInfo ? JSON.parse(response.systemInfo) : null);
+      setChatInfo(response);
+
+      const reviewCounter = parseInt(window.localStorage.getItem('review_counter') ?? '0');
+      console.log({ reviewCounter });
+      if (reviewCounter < 5) {
+        window.localStorage.setItem('review_counter', (reviewCounter + 1).toString());
+      } else {
+        window.localStorage.setItem('review_counter', (0).toString());
+
+        setIsReviewDialogOpen(true);
+      }
     })();
   }, [id]);
 
@@ -71,29 +76,40 @@ export function ChatPage({ id }: Props) {
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             {chat.request}
           </Typography>
-          {markdown && (
-            <Button
-              size="small"
-              color="secondary"
-              sx={{ ml: 'auto' }}
-              startIcon={<Iconify icon="eva:refresh-fill" />}
-              onClick={async () => {
-                setMarkdown(null);
-                setSystemInfo(null);
+          {chatInfo?.request && (
+            <>
+              <Button
+                size="small"
+                color="secondary"
+                sx={{ ml: 'auto' }}
+                startIcon={<Iconify icon="eva:star-fill" />}
+                onClick={() => {
+                  setIsReviewDialogOpen(true);
+                }}
+              >
+                Send a review
+              </Button>
+              <Button
+                size="small"
+                color="secondary"
+                sx={{ ml: 2 }}
+                startIcon={<Iconify icon="eva:refresh-fill" />}
+                onClick={async () => {
+                  setChatInfo(null);
 
-                await api.regeneratePrompt(id);
+                  await api.regeneratePrompt(id);
 
-                const response = await api.waitForChatResponse(id);
-                setMarkdown(response?.response ?? 'Generation error');
-                setSystemInfo(response.systemInfo ? JSON.parse(response.systemInfo) : null);
-              }}
-            >
-              Regenerate
-            </Button>
+                  const response = await api.waitForChatResponse(id);
+                  setChatInfo(response);
+                }}
+              >
+                Regenerate
+              </Button>
+            </>
           )}
         </Box>
 
-        {!markdown ? (
+        {!chatInfo?.response ? (
           <Box
             sx={{
               display: 'flex',
@@ -111,107 +127,139 @@ export function ChatPage({ id }: Props) {
             <Typography sx={{ mt: 3, fontSize: '1.1rem' }}>{waitingTextRef.current}</Typography>
           </Box>
         ) : (
-          <>
-            {/* Markdown Bullet List Response */}
-            <Box
-              sx={{
-                mb: 3,
-                ul: {
-                  pt: 2,
-                  pl: 2,
-                  listStyleType: 'disc',
-                  li: {
-                    mb: 2,
-                  },
+          <Box
+            sx={{
+              mb: -3,
+              ul: {
+                pt: 2,
+                pl: 2,
+                listStyleType: 'disc',
+                li: {
+                  mb: 2,
+                },
+              },
+            }}
+          >
+            <ReactMarkdown
+              components={{
+                li({ node, children }) {
+                  const text = children?.toString() ?? '';
+                  const feedback = chatInfo?.feedbacks.find((x) => x.text === text);
+
+                  const isLiked = feedback && feedback.feedback == 1;
+                  const isDisliked = feedback && feedback.feedback == -1;
+
+                  return (
+                    <li>
+                      {children}
+                      <Tooltip title="Like" enterDelay={500}>
+                        <IconButton
+                          size="small"
+                          onClick={() => {
+                            setChatInfo({
+                              ...chatInfo,
+                              feedbacks: [
+                                ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
+                                ...(!isLiked
+                                  ? [
+                                      {
+                                        text: children?.toString() ?? '',
+                                        feedback: 1,
+                                      },
+                                    ]
+                                  : []),
+                              ],
+                            });
+
+                            api.sendFeedback(id, {
+                              feedback: isLiked ? null : 1,
+                              text,
+                            });
+                          }}
+                          {...(isLiked && {
+                            color: 'success',
+                          })}
+                          sx={{
+                            ml: 1.5,
+                            opacity: isLiked ? 1 : 0.5,
+                            '&:hover': {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <Iconify icon={`mdi:like${isLiked ? '' : '-outline'}`} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Dislike" enterDelay={500}>
+                        <IconButton
+                          size="small"
+                          {...(isDisliked && {
+                            color: 'error',
+                          })}
+                          onClick={() => {
+                            setChatInfo({
+                              ...chatInfo,
+                              feedbacks: [
+                                ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
+                                ...(!isDisliked
+                                  ? [
+                                      {
+                                        text: children?.toString() ?? '',
+                                        feedback: -1,
+                                      },
+                                    ]
+                                  : []),
+                              ],
+                            });
+
+                            api.sendFeedback(id, {
+                              feedback: isDisliked ? null : -1,
+                              text,
+                            });
+                          }}
+                          sx={{
+                            ml: 0.5,
+                            opacity: isDisliked ? 1 : 0.5,
+                            '&:hover': {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          <Iconify icon={`mdi:dislike${isDisliked ? '' : '-outline'}`} />
+                        </IconButton>
+                      </Tooltip>
+                      {/* </span> */}
+                    </li>
+                  );
                 },
               }}
             >
-              <ReactMarkdown>{markdown}</ReactMarkdown>
+              {chatInfo?.response}
+            </ReactMarkdown>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'center', borderTop: '1px solid #ccc', pt: 2 }}
+            >
+              <Typography variant="caption" sx={{ textAlign: 'center' }}>
+                SongAssist can make errors. Please check important information.
+              </Typography>
             </Box>
-
-            <Box>
-              {systemInfo?.searchUserPrompt && (
-                <Accordion>
-                  <AccordionSummary>
-                    <Typography component="span">User Prompt for Search</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
-                    {systemInfo.searchUserPrompt}
-                  </AccordionDetails>
-                </Accordion>
-              )}
-              {systemInfo?.searchResponse && (
-                <Accordion>
-                  <AccordionSummary>
-                    <Typography component="span">Search Result</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box
-                      sx={{
-                        mb: 3,
-                        ul: {
-                          pt: 2,
-                          pl: 2,
-                          listStyleType: 'disc',
-                          li: {
-                            mb: 2,
-                          },
-                        },
-                      }}
-                    >
-                      <ReactMarkdown>{systemInfo?.searchResponse}</ReactMarkdown>
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-              )}
-              {systemInfo?.postSystemPrompt && (
-                <Accordion>
-                  <AccordionSummary>
-                    <Typography component="span">Post-processing System Prompt</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
-                    {systemInfo.postSystemPrompt}
-                  </AccordionDetails>
-                </Accordion>
-              )}
-              {systemInfo?.postUserPrompt && (
-                <Accordion>
-                  <AccordionSummary>
-                    <Typography component="span">Post-processing User Prompt</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ whiteSpace: 'pre-line' }}>
-                    {systemInfo.postUserPrompt}
-                  </AccordionDetails>
-                </Accordion>
-              )}
-              {systemInfo?.response && (
-                <Accordion>
-                  <AccordionSummary>
-                    <Typography component="span">Final Result</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Box
-                      sx={{
-                        mb: 3,
-                        ul: {
-                          pt: 2,
-                          pl: 2,
-                          listStyleType: 'disc',
-                          li: {
-                            mb: 2,
-                          },
-                        },
-                      }}
-                    >
-                      <ReactMarkdown>{systemInfo?.response}</ReactMarkdown>
-                    </Box>
-                  </AccordionDetails>
-                </Accordion>
-              )}
-            </Box>
-          </>
+          </Box>
         )}
       </Paper>
+      <ReviewDialog
+        open={isReviewDialogOpen}
+        onSubmit={(rating, comment) => {
+          api.sendReview(id, {
+            rating,
+            comment,
+          });
+
+          toast.success('Thanks for your review!');
+        }}
+        onClose={() => {
+          setIsReviewDialogOpen(false);
+        }}
+      />
     </Container>
   );
 }

@@ -112,9 +112,9 @@ function NavSubList({
 }: NavSubListProps) {
   return (
     <NavUl sx={{ gap: 'var(--nav-item-gap)' }}>
-      {data.map((list) => (
+      {data.map((list, idx) => (
         <NavList
-          key={list.title}
+          key={`${list.title}_${idx}`}
           data={list}
           render={render}
           depth={depth + 1}

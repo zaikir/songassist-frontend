@@ -41,6 +41,14 @@ export default (axiosInstance: AxiosInstance) => {
     return { chatId: generationId };
   }
 
+  async function sendFeedback(chatId: string, payload: any) {
+    await axiosInstance.post(`/chats/${chatId}/feedback`, payload);
+  }
+
+  async function sendReview(chatId: string, payload: any) {
+    await axiosInstance.post(`/chats/${chatId}/review`, payload);
+  }
+
   async function regeneratePrompt(chatId: string) {
     await axiosInstance.post(`/chats/${chatId}/regenerate`);
 
@@ -50,7 +58,11 @@ export default (axiosInstance: AxiosInstance) => {
   async function waitForChatResponse(chatId: string) {
     let result = null;
     while (true) {
-      const { data } = await axiosInstance.get<Chat>(`/chats/prompt-status?id=${chatId}`);
+      const { data } = await axiosInstance.get<
+        Chat & {
+          feedbacks: { text: string; feedback: number }[];
+        }
+      >(`/chats/prompt-status?id=${chatId}`);
 
       if (data.response !== null || data.error !== null) {
         result = data;
@@ -64,6 +76,8 @@ export default (axiosInstance: AxiosInstance) => {
   }
 
   return {
+    sendFeedback,
+    sendReview,
     getChats,
     searchSong,
     getChatInfo,

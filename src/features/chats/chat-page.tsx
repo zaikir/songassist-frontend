@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Chat } from 'src/types/entities';
 
 import { useAtomValue } from 'jotai';
@@ -27,6 +28,22 @@ type ChatInfo = Chat & {
   }[];
 };
 
+function getTextFromReactNode(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return node.toString();
+  }
+
+  if (Array.isArray(node)) {
+    return node.map(getTextFromReactNode).join('');
+  }
+
+  if (typeof node === 'object' && node !== null && 'props' in node) {
+    return getTextFromReactNode((node as any).props.children);
+  }
+
+  return '';
+}
+
 export function ChatPage({ id }: Props) {
   const chats = useAtomValue(chatsAtom);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
@@ -47,7 +64,9 @@ export function ChatPage({ id }: Props) {
       } else {
         window.localStorage.setItem('review_counter', (0).toString());
 
-        setIsReviewDialogOpen(true);
+        setTimeout(() => {
+          setIsReviewDialogOpen(true);
+        }, 1000);
       }
     })();
   }, [id]);
@@ -143,7 +162,7 @@ export function ChatPage({ id }: Props) {
             <ReactMarkdown
               components={{
                 li({ node, children }) {
-                  const text = children?.toString() ?? '';
+                  const text = getTextFromReactNode(children);
                   const feedback = chatInfo?.feedbacks.find((x) => x.text === text);
 
                   const isLiked = feedback && feedback.feedback == 1;
@@ -151,84 +170,84 @@ export function ChatPage({ id }: Props) {
 
                   return (
                     <li>
-                      {children}
-                      <Tooltip title="Like" enterDelay={500}>
-                        <IconButton
-                          size="small"
-                          onClick={() => {
-                            setChatInfo({
-                              ...chatInfo,
-                              feedbacks: [
-                                ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
-                                ...(!isLiked
-                                  ? [
-                                      {
-                                        text: children?.toString() ?? '',
-                                        feedback: 1,
-                                      },
-                                    ]
-                                  : []),
-                              ],
-                            });
+                      {text}
+                      <Box sx={{ display: 'inline' }}>
+                        <Tooltip title="Like" enterDelay={500}>
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setChatInfo({
+                                ...chatInfo,
+                                feedbacks: [
+                                  ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
+                                  ...(!isLiked
+                                    ? [
+                                        {
+                                          text,
+                                          feedback: 1,
+                                        },
+                                      ]
+                                    : []),
+                                ],
+                              });
 
-                            api.sendFeedback(id, {
-                              feedback: isLiked ? null : 1,
-                              text,
-                            });
-                          }}
-                          {...(isLiked && {
-                            color: 'success',
-                          })}
-                          sx={{
-                            ml: 1.5,
-                            opacity: isLiked ? 1 : 0.5,
-                            '&:hover': {
-                              opacity: 1,
-                            },
-                          }}
-                        >
-                          <Iconify icon={`mdi:like${isLiked ? '' : '-outline'}`} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Dislike" enterDelay={500}>
-                        <IconButton
-                          size="small"
-                          {...(isDisliked && {
-                            color: 'error',
-                          })}
-                          onClick={() => {
-                            setChatInfo({
-                              ...chatInfo,
-                              feedbacks: [
-                                ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
-                                ...(!isDisliked
-                                  ? [
-                                      {
-                                        text: children?.toString() ?? '',
-                                        feedback: -1,
-                                      },
-                                    ]
-                                  : []),
-                              ],
-                            });
+                              api.sendFeedback(id, {
+                                feedback: isLiked ? null : 1,
+                                text,
+                              });
+                            }}
+                            {...(isLiked && {
+                              color: 'success',
+                            })}
+                            sx={{
+                              opacity: isLiked ? 1 : 0.5,
+                              '&:hover': {
+                                opacity: 1,
+                              },
+                            }}
+                          >
+                            <Iconify icon={`mdi:like${isLiked ? '' : '-outline'}`} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Dislike" enterDelay={500}>
+                          <IconButton
+                            size="small"
+                            {...(isDisliked && {
+                              color: 'error',
+                            })}
+                            onClick={() => {
+                              setChatInfo({
+                                ...chatInfo,
+                                feedbacks: [
+                                  ...(chatInfo?.feedbacks ?? []).filter((x) => x.text !== text),
+                                  ...(!isDisliked
+                                    ? [
+                                        {
+                                          text,
+                                          feedback: -1,
+                                        },
+                                      ]
+                                    : []),
+                                ],
+                              });
 
-                            api.sendFeedback(id, {
-                              feedback: isDisliked ? null : -1,
-                              text,
-                            });
-                          }}
-                          sx={{
-                            ml: 0.5,
-                            opacity: isDisliked ? 1 : 0.5,
-                            '&:hover': {
-                              opacity: 1,
-                            },
-                          }}
-                        >
-                          <Iconify icon={`mdi:dislike${isDisliked ? '' : '-outline'}`} />
-                        </IconButton>
-                      </Tooltip>
-                      {/* </span> */}
+                              api.sendFeedback(id, {
+                                feedback: isDisliked ? null : -1,
+                                text,
+                              });
+                            }}
+                            sx={{
+                              ml: 0.5,
+                              opacity: isDisliked ? 1 : 0.5,
+                              '&:hover': {
+                                opacity: 1,
+                              },
+                            }}
+                          >
+                            <Iconify icon={`mdi:dislike${isDisliked ? '' : '-outline'}`} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </li>
                   );
                 },

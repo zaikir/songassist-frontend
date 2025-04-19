@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useAtomValue, getDefaultStore } from 'jotai';
+import { loadIcons } from '@iconify/react/dist/iconify.js';
 
 import { useMountEffect } from 'src/hooks/use-mount-effect';
 
@@ -19,6 +20,19 @@ const store = getDefaultStore();
 
 export function AppBootstrapper({ children }: Props) {
   const initialize = useCallback(async () => {
+    loadIcons([
+      'devicon:google',
+      'solar:home-angle-bold-duotone',
+      'solar:settings-bold-duotone',
+      'eva:star-fill',
+      'eva:refresh-fill',
+      'mdi:like',
+      'mdi:like-outline',
+      'mdi:dislike',
+      'mdi:dislike-outline',
+      'mingcute:arrow-left-line',
+    ]);
+
     await getUserLocationInfo();
 
     try {

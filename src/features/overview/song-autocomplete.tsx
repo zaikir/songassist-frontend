@@ -44,11 +44,8 @@ export function SongSelectField({
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<SongOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [resetAudio, setResetAudio] = useState<boolean>(false);
-  const [selectedSongUrl, setSelectedSongUrl] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
-  // Debounced fetch function for API calls.
   const throttledFetch = useMemo(
     () =>
       debounce(async (request: string, callback: (results: SongOption[]) => void) => {
@@ -88,6 +85,9 @@ export function SongSelectField({
 
   return (
     <Autocomplete
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
       noOptionsText={noOptionsText}
       loadingText={loadingText}
       options={options}
@@ -102,10 +102,13 @@ export function SongSelectField({
       // When the user selects an option, update audio URL and propagate the change.
       // @ts-expect-error ada
       onChange={(event: SyntheticEvent, newValue: SongOption | null) => {
-        setSelectedSongUrl(newValue ? newValue.previewUrl : null);
+        // setSelectedSongUrl(newValue ? newValue.previewUrl : null);
         // onChange({ target: { value: newValue } });
       }}
       onInputChange={(event, newInputValue: string) => {
+        console.log({
+          newInputValue,
+        });
         setInputValue(newInputValue);
         onChange(newInputValue as any);
       }}
@@ -143,6 +146,15 @@ export function SongSelectField({
                 {params.InputProps.endAdornment}
               </>
             ),
+          }}
+          inputProps={{
+            ...params.inputProps,
+            onKeyDown: (e) => {
+              if (e.key === 'Enter') {
+                setOpen(false);
+                e.stopPropagation();
+              }
+            },
           }}
         />
       )}
